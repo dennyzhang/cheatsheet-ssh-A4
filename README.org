@@ -20,11 +20,20 @@ Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-ssh, Category: [[https://
 File me [[https://github.com/DennyZhang/cheatsheet-ssh-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-ssh-A4][this repo]].
 
 See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
-** scp
-| Name                   | Summary                                                                     |
-|------------------------+-----------------------------------------------------------------------------|
-| Download remote folder | =scp -r -i <ssh-keyfile> ec2-user@<ssh-host>:/home/letsencrypt-20180825 ./= |
-** Security
+** ssh general
+| Name               | Summary                                                                                   |
+|--------------------+-------------------------------------------------------------------------------------------|
+| ssh tunnel         | =ssh -N -p 22 -i <ssh-keyfile> -f root@172.17.0.8 -L *:18085:localhost:8085 -n /bin/bash= |
+| ssh agent load key | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                            |
+| ssh-copy-id        |                                                                                           |
+- Inject ssh public key
+#+BEGIN_EXAMPLE
+echo "ssh-rsa AAA...0r contact@dennyzhang.com" >>  ~/.ssh/authorized_keys
+#+END_EXAMPLE
+** ssh security
+| Name                    | Summary                                                                                  |
+|-------------------------+------------------------------------------------------------------------------------------|
+| Disable ssh by password | =sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config= |
 - Enable/Disable SSH Host Key Checking
 #+BEGIN_EXAMPLE
 # ~/.ssh/config
@@ -33,6 +42,10 @@ Host *
    UserKnownHostsFile=/dev/null
 #+END_EXAMPLE
 - Add passphrase protection to your ssh deploy key
+** scp
+| Name                   | Summary                                                                     |
+|------------------------+-----------------------------------------------------------------------------|
+| Download remote folder | =scp -r -i <ssh-keyfile> ec2-user@<ssh-host>:/home/letsencrypt-20180825 ./= |
 
 ** More Resources
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
@@ -64,12 +77,6 @@ http://confluencecn.dennyzhang.com:18088/display/DEVOPS/Tips%3A+Use+ssh+tunnel+t
 ** ssh -v
 ** DONE [#A] ssh crediential: ssh-copy-id
   CLOSED: [2014-03-10 Mon 14:56]
-exec ssh-agent bash && ssh-keygen
-ssh-add
-#+begin_example
-oscadmin@janitor:~$ ssh-copy-id root@192.168.1.187
-/usr/bin/ssh-copy-id: ERROR: No identities found
-#+end_example
 *** DONE authorized_keys
    CLOSED: [2014-10-07 Tue 16:11]
 #+begin_example
@@ -336,18 +343,6 @@ echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA2aRNnkifPeQIR0MtLyFZo2RSSbUVP/vrkGii3V
 service ssh restart
 
 Check with some other VM by username and pssword, not ssh keyfile
-** DONE sshd allow SSH password authentication
-  CLOSED: [2014-09-17 Wed 21:08]
-http://askubuntu.com/questions/101670/how-can-i-allow-ssh-password-authentication-from-only-certain-ip-addresses
-sudo su -
-passwd
-
-sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
-# CentOS
-nohup /etc/init.d/sshd restart &
-
-# Ubuntu
-nohup service ssh restart &
 ** DONE expect ssh在server上执行一个命令
    CLOSED: [2012-11-24 Sat 10:21]
 #+begin_example exp
@@ -365,12 +360,6 @@ expect eof;
 ** DONE [#A] ssh host key: change ~/.ssh/authorized_keys
   CLOSED: [2014-10-10 Fri 17:08]
 echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAwp69ZIA8Usz5EgSh5gBXKGFZBUawP8nDSgZVW6Vl/+NDhij5Eo5BePYvUaxg/5aFxrxROOyLGE9xhNBk7PP49Iz1pqO9T/QNSIiuuvQ/Xhpvb4OQfD5xr6l4t/9gLf+OYGvaFHf/xzMnc9cKzZ+azLlDHbeewu1GMI/XNFWo4VWAsH+6xM8VIpdJSaR7alJn/W6dmyRBbk0uS3Yut63jVFk4zalAzXquU0BX1ne+DLB/LW8ZanN5PWECabSi4dXYLfxC2rDhDcQdXU3MwV5b7TtR5rFoNS8IGcyHoeq5tasAtAAaD2sEzyJbllAfFsNyxNQ+Yh8935HcWqx2/T0r filebat.mark@gmail.com" >>  ~/.ssh/authorized_keys
-** #  --8<-------------------------- separator ------------------------>8--
-** DONE [#A] ssh tunnel: ssh -N -p 22 -f root@qa1b -L 8002:localhost:9281 -n /bin/bash :IMPORTANT:
-  CLOSED: [2014-07-18 Fri 14:06]
-ssh -N -p 22 -f root@qa1b -L 8002:localhost:9281 -n /bin/bash1
-
-local 8002 --> remote:9281, by server's ssh port of 22
 ** DONE [#B] windows ssh tunnel
   CLOSED: [2014-11-23 Sun 21:19]
 http://howto.ccs.neu.edu/howto/windows/ssh-port-tunneling-with-putty/
@@ -5486,4 +5475,3 @@ no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="echo 'Please l
    CLOSED: [2018-01-23 Tue 10:04]
 https://unix.stackexchange.com/questions/184379/scp-from-one-server-to-another-server
 https://superuser.com/questions/66949/scp-from-one-external-server-to-another
-
