@@ -1,9 +1,9 @@
-* SSH CheatSheet                                               :Tool:
+* SSH CheatSheet                                               :Tools:
 :PROPERTIES:
 :type:     ssh
 :END:
 
-Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-ssh, Category: [[https://cheatsheet.dennyzhang.com/category/languages][languages]]
+Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-ssh, Category: [[https://cheatsheet.dennyzhang.com/category/tools][tools]]
 
 #+BEGIN_HTML
 <a href="https://github.com/dennyzhang/cheatsheet-ssh-A4"><img align="right" width="200" height="183" src="https://www.dennyzhang.com/wp-content/uploads/denny/watermark/github.png" /></a>
