@@ -23,11 +23,11 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 ** ssh general
 | Name                                        | Summary                                                                                   |
 |---------------------------------------------+-------------------------------------------------------------------------------------------|
-| run ssh command by muting host key check    | =ssh -o StrictHostKeyChecking=no root@192.168.75.109 "date"=                              |
+| run ssh command by muting host key check    | =ssh -o StrictHostKeyChecking=no root@192.168.75.109 date=                               |
 | ssh tunnel                                  | =ssh -N -p 22 -i <ssh-keyfile> -f root@172.17.0.8 -L *:18085:localhost:8085 -n /bin/bash= |
 | ssh agent load key                          | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                            |
-| generate a new key pair                     | =ssh-keygen=, =ssh-keygen -t rsa -C "your_email@example.com"=                             |
-| generate a new key pair without interaction | =ssh-keygen -t rsa -f /tmp/sshkey -q -N ""=                                               |
+| generate a new key pair                     | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=                             |
+| generate a new key pair without interaction | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                                              |
 | ssh-copy-id                                 |                                                                                           |
 
 ** ssh security
