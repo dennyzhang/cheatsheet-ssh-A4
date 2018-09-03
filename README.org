@@ -28,7 +28,6 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | ssh agent load key                          | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                            |
 | generate a new key pair                     | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=                             |
 | generate a new key pair without interaction | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                                               |
-| ssh-copy-id                                 |                                                                                           |
 | [[https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04][fail2ban]]                                    | protect SSH server from brute force attacks                                               |
 
 ** advanced ssh
@@ -88,7 +87,6 @@ Host 192.168.1.*
 
 Host *
     StrictHostKeyChecking no
-http://xmodulo.com/how-to-accept-ssh-host-keys-automatically-on-linux.html
 #+END_EXAMPLE
 
 - Use expect to run ssh command with credential auto input
@@ -815,3 +813,4 @@ no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="echo 'Please l
   CLOSED: [2018-01-23 Tue 10:04]
 https://unix.stackexchange.com/questions/184379/scp-from-one-server-to-another-server
 https://superuser.com/questions/66949/scp-from-one-external-server-to-another
+* TODO ssh-copy-id                                                 :noexport:
