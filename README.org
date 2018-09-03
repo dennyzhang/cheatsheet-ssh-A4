@@ -23,22 +23,26 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 ** ssh general
 | Name                                        | Summary                                                                                   |
 |---------------------------------------------+-------------------------------------------------------------------------------------------|
-| run ssh command by muting host key check    | =ssh -o StrictHostKeyChecking=no root@192.168.75.109 date=                               |
+| run ssh command by muting host key check    | =ssh -o StrictHostKeyChecking=no root@192.168.75.109 date=                                |
 | ssh tunnel                                  | =ssh -N -p 22 -i <ssh-keyfile> -f root@172.17.0.8 -L *:18085:localhost:8085 -n /bin/bash= |
 | ssh agent load key                          | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                            |
 | generate a new key pair                     | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=                             |
-| generate a new key pair without interaction | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                                              |
+| generate a new key pair without interaction | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                                               |
 | ssh-copy-id                                 |                                                                                           |
+| [[https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04][fail2ban]]                                    | protect SSH server from brute force attacks                                               |
 
+** advanced ssh
+| Name                                 | Summary                                                                                               |
+|--------------------------------------+-------------------------------------------------------------------------------------------------------|
+| Diff local file with remote ssh file | =diff local_file.txt <(ssh user@remote_host 'cat remote_file.txt')=                                   |
+| Diff two remote ssh files            | =diff <(ssh user@remote_host 'cat remote_file.txt') <(ssh user2@remote_host2 'cat remote_file2.txt')= |
 ** ssh security
 | Name                                     | Summary                                                                                  |
 |------------------------------------------+------------------------------------------------------------------------------------------|
 | Disable ssh by password                  | =sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config= |
 | Disable root login                       | =sed -i 's/^PermitRootLogin yes/#PermitRootLogin yes/' /etc/ssh/sshd_config=             |
-| Enable/Disable SSH Host Key Checking     | In ~/.ssh/config, add =StrictHostKeyChecking yes=                                        |
+| Enable/Disable SSH Host Key Checking     | =StrictHostKeyChecking yes= change ~/.ssh/config                                         |
 | Add passphrase protection to ssh keyfile | =ssh-keygen -p -f id_rsa=  [[https://www.dennyzhang.com/ssh_passphrase][link: Manage SSH Key File With Passphrase]]                     |
-
-- Add passphrase protection to your ssh deploy key
 
 ** scp
 | Name                   | Summary                                                                     |
@@ -68,12 +72,23 @@ Host sandbox
      HostName 192.168.50.10
      StrictHostKeyChecking no
      User root
+#+END_EXAMPLE
 
+#+BEGIN_EXAMPLE
 Host 192.168.1.*
    StrictHostKeyChecking no
    Port 32882
    UserKnownHostsFile=/dev/null
    IdentityFile ~/.ssh/id_rsa
+#+END_EXAMPLE
+
+- Turn off host key checking for all hosts
+#+BEGIN_EXAMPLE
+# In ~/.ssh/config or /etc/ssh/ssh_config
+
+Host *
+    StrictHostKeyChecking no
+http://xmodulo.com/how-to-accept-ssh-host-keys-automatically-on-linux.html
 #+END_EXAMPLE
 
 - Use expect to run ssh command with credential auto input
@@ -94,7 +109,8 @@ expect eof;
 #+BEGIN_EXAMPLE
 # https://www.howtoforge.com/reverse-ssh-tunneling
 
-autossh -M 40000 -p 2702 -i /home/denny/al -fN -o "PubkeyAuthentication=yes" \
+autossh -M 40000 -p 2702 -i /home/denny/al -fN \
+    -o "PubkeyAuthentication=yes" \
     -o "StrictHostKeyChecking=false" -o "PasswordAuthentication=no" \
     -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3" \
     -R 123.57.240.189:29995:localhost:22 root@123.57.240.189
@@ -124,20 +140,7 @@ License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_lice
 #+LINK_UP:
 #+LINK_HOME:
 * TODO [#A] Blog: Advanced Usage Of SSH                            :noexport:
-http://confluencecn.dennyzhang.com:18088/display/DEVOPS/Tips%3A+ssh+without+password
-http://confluencecn.dennyzhang.com:18088/display/DEVOPS/Tips%3A+Use+ssh+tunnel+to+access+tcp+port
 ** ssh -v
-** DONE [#A] ssh crediential: ssh-copy-id
-  CLOSED: [2014-03-10 Mon 14:56]
-*** DONE authorized_keys
-   CLOSED: [2014-10-07 Tue 16:11]
-#+begin_example
-generic03:~# ls -lth /root/.ssh/authorized_keys
--rw------- 1 root root 410 Oct  7 21:09 /root/.ssh/authorized_keys
-generic03:~# cat /root/.ssh/authorized_keys
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDS0PzlAmou/sDSwCbaZq3QwYjn8V7GZNiZiB87FxlkI9RAIWx0czbHgDovqAgEJaOZjnnU2DOQpnbaLbHKAdNXVJeB7vwCoh/DYzxBFPX7Q7z0p95iyLbwCMGkJDPKcYGM1QP6O3kUNncWovmUnPGGmKbHagmwi/IXr8zO8yLixvFJLeyKopyHCQGb5h6pdbzsHCOdNIfOHbWey8WDlIsQzoqqsATJfsvE4Eb3nNzGkzZTGmc3IL13eCy13MedN3EUa6hdSh3tESRPCIcpGMtCnCPgUEfAHmLdb6pOHT2pAN4CbOZRsSjYc4nxWQamKF6n3ClJqHCTWDaGIPtcRNRt /var/lib/jenkins/.ssh/id_rsa
-#+end_example
-*** how ssh-copy-id is done
 ** [#A] Configure EC2 instance for ssh login                      :IMPORTANT:
 sudo su -
 sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
@@ -152,14 +155,6 @@ echo "ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA2aRNnkifPeQIR0MtLyFZo2RSSbUVP/vrkGii3V
 service ssh restart
 
 Check with some other VM by username and pssword, not ssh keyfile
-** DONE [#A] ssh host key: change ~/.ssh/authorized_keys
-  CLOSED: [2014-10-10 Fri 17:08]
-echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAwp69ZIA8Usz5EgSh5gBXKGFZBUawP8nDSgZVW6Vl/+NDhij5Eo5BePYvUaxg/5aFxrxROOyLGE9xhNBk7PP49Iz1pqO9T/QNSIiuuvQ/Xhpvb4OQfD5xr6l4t/9gLf+OYGvaFHf/xzMnc9cKzZ+azLlDHbeewu1GMI/XNFWo4VWAsH+6xM8VIpdJSaR7alJn/W6dmyRBbk0uS3Yut63jVFk4zalAzXquU0BX1ne+DLB/LW8ZanN5PWECabSi4dXYLfxC2rDhDcQdXU3MwV5b7TtR5rFoNS8IGcyHoeq5tasAtAAaD2sEzyJbllAfFsNyxNQ+Yh8935HcWqx2/T0r filebat.mark@gmail.com" >>  ~/.ssh/authorized_keys
-** Why my ssh can't login?
-** web page: Using ssh-agent with ssh
-#+BEGIN_EXAMPLE
-http://mah.everybody.org/docs/ssh\\
-#+END_EXAMPLE
 ** DONE ssh-add fail: Could not open a connection to your authentication agent.
   CLOSED: [2012-01-04 Wed 11:26]
 http://forum.slicehost.com/comments.php?DiscussionID=3385\\
@@ -176,7 +171,7 @@ ssh-add
 bash-3.2$ ssh-add /var/lib/hudson/.ssh/id_rsa
 Could not open a connection to your authentication agent.
 #+end_example
-** SSH login authentication method: publickey,gssapi-keyex,gssapi-with-mic,password
+** TODO SSH login authentication method: publickey,gssapi-keyex,gssapi-with-mic,password
 ** DONE sshd出现问题: /etc/ssh/ssh_config
   CLOSED: [2013-08-23 Fri 15:10]
 ServerAliveInterval 60
@@ -201,23 +196,6 @@ ls -lth / | grep 'root$'
 drwxrwxrwx  11 root root  4.0K Feb 25 14:50 root
 root@fluig-id-cdn-01:~/.ssh# chmod 700 /root/
 chmod 700 /root/
-#+END_EXAMPLE
-** DONE ssh config syntax: /root/.ssh/config
-  CLOSED: [2015-03-09 Mon 22:01]
-http://nerderati.com/2011/03/17/simplify-your-life-with-an-ssh-config-file/
-echo -e "Host github.com\n\tStrictHostKeyChecking no\n\tIdentityFile /root/.ssh/id_rsa\n" >> /root/.ssh/config
-
-#+BEGIN_EXAMPLE
-~/.ssh/config
-However, there's a much more elegant and flexible solution to this problem. Enter the SSH config file:
-
-# contents of $HOME/.ssh/config
-Host dev
-    HostName dev.example.com
-    Port 22000
-    StrictHostKeyChecking no
-    User fooey
-    IdentityFile /root/.ssh/id_rsa
 #+END_EXAMPLE
 ** DONE MDM-1299: After modifying ssh authorized_keys, ssh still keep asking password: wrong acl for /root/.ssh
   CLOSED: [2015-11-22 Sun 03:36]
@@ -251,295 +229,6 @@ ssh -4 -D 8081 user@8.8.8.8
 root@iZ25y7u44dnZ:~# ssh -i /home/denny/denny -N -p 10040 -f root@123.56.44.213 -L 38080:localhost:28080 -n /bin/bash
 bind: Cannot assign requested address
 #+END_EXAMPLE
-** DONE SSH configurations: HashKnownHosts option
-  CLOSED: [2016-01-23 Sat 16:12]
-http://linux-audit.com/audit-ssh-configurations-hashknownhosts-option/
-
-Each time the SSH client connects with a server, it will store a
-related signature (a key) of the server. This information is stored in
-a file names named known_hosts. The known_hosts file itself is
-available in the .ssh subdirectory of the related user (on the
-client). In the case the signature of the server changes, SSH will
-protect the user by notifying about this chance.
-** DONE [#A] ssh turn off host key checking for all hosts
-  CLOSED: [2016-02-14 Sun 10:24]
-To turn off host key checking for all hosts you connect to:
-~/.ssh/config or /etc/ssh/ssh_config
-
-Host *
-    StrictHostKeyChecking no
-http://xmodulo.com/how-to-accept-ssh-host-keys-automatically-on-linux.html
-** DONE diff remote files over SSH
-  CLOSED: [2016-02-14 Sun 11:20]
-http://xmodulo.com/how-to-diff-remote-files-over-ssh.html
-To diff a local file and a remote file:
-
-$ diff local_file.txt <(ssh user@remote_host 'cat remote_file.txt')
-To diff two remote files:
-
-$ diff <(ssh user@remote_host 'cat remote_file.txt') <(ssh user2@remote_host2 'cat remote_file2.txt')
-** DONE secure SSH login with one-time passwords on Linux: OTPW
-  CLOSED: [2016-02-14 Sun 14:47]
-http://xmodulo.com/secure-ssh-login-one-time-passwords-linux.html
-OTPW consists of one-time password generator and PAM-integrated verification routines.
-** TODO [#A] ssh performance tunning                              :IMPORTANT:
-echo "UseDNS no" >> /etc/ssh/sshd_config
-
-echo "ClientAliveInterval 30" >> /etc/ssh/sshd_config
-*** [#A] web page: [原]sshd服务取消DNS反向解析及修改超时时间 - linuxの飘扬 - Power by <nobr>www.linuxfly.org</nobr>
-http://www.linuxfly.org/post/245/
-**** webcontent                                                    :noexport:
-#+begin_example
-Location: http://www.linuxfly.org/post/245/
-  * 首页
-  * RSS
-  * 登入
-  * 注册
-  * 标签
-  * 留言
-  * 链接
-  * 边栏
-  * 星标日志
-
-[toolbar_pr]解决打开word2003错误提示
-[toolbar_ne][原]通过OpenSSH传输客户端的环境变量
-Sep 13
-
-[原]sshd服务取消DNS反向解析及修改超时时间 [unstarred] 晴
-
-linuxing, 19:55, 基础知识 » 故障处理, 评论(0), 引用(0), 阅读(14032), Via 本站原创
-[toolbar_fo] 大 | 中 | 小 [toolbar_rs]
-引用功能被关闭了.
-   两个有关sshd服务的常见问题:
-一`取消DNS反向解析
-   使用的Linux用户可能觉得用SSH登陆时为什么反映这么慢,有的可能要几十秒才能登陆进系统.其实这是由于
-默认sshd服务开启了DNS反向解析,如果你的sshd没有使用域名等来作为限定时,可以取消此功能.
-
-# vi /etc/ssh/sshd_config
-
-找到选项
-引用
-#UseDNS yes
-
-修改为
-引用
-UseDNS no
-
-重启sshd 服务
-
-# service sshd restart
-
-二`修改超时时间
-在Asinanux 3.0带4.3sp2版本OpenSSH,默认超时连接时间比较短,这是出于安全的考虑,但对于需要长时间使用
-的用户来说很麻烦,每次都要重新连接.我们可以修改其设定参数:
-# vi /etc/ssh/sshd_config
-
-找到选项
-引用
-#ClientAliveInterval 0
-
-修改为
-引用
-ClientAliveInterval 10
-
-重启sshd 服务
-
-# service sshd restart
-
-这样,超过10秒没有动作的情况下,sshd服务才会中断连接.
-相关日志
-[转]ssh 域名解析登录延迟问题
-Tags: sshd
-
-发表评论
-
-表情                  昵称 [            ]  密码 [            ]  游客无需密码
-emotemotemotemotemot  网址 [            ]  电邮 [            ]  [注册]
-emotemotemotemotemot  [bar]  [bold]  [italic]  [underline]  [bar]  [insertimag]  [url]  [email]
-emotemotemotemotemot  [quote]
-emotemotemotemotemot  [                                            ]
-emotemotemotemotemot  [                                            ]
-[ ] 打开HTML          [                                            ]
-[*] 打开UBB           [                                            ]
-[*] 打开表情          [                                            ]
-[ ] 隐藏              [                                            ]
-[ ] 记住我            [                                            ]
-                      [                                            ]
-                      [                                            ]
-                      [                                            ]
-                      提交     重置
-
-日历
-
-< 2016 >    < 4 >
-丙申年（猴）
-日            一            二            三            四            五            六
-                                                                      1             2
-3             4             5             6             7             8             9
-10            11            12            13            14            15            16
-17            18            19            20            21            22            23
-24            25            26            27            28            29            30
-
-分类
-
-  * 基础知识 [0] RSS
-  * 系统命令 [44] RSS
-  * 性能评估 [11] RSS
-  * 故障处理 [49] RSS
-  * 硬件处理 [35] RSS
-  * RPM [20] RSS
-  * 网络服务 [0] RSS
-  * OpenStack [9] RSS
-  * HA [24] RSS
-  * 虚拟机 [35] RSS
-  * 邮件系统 [16] RSS
-  * 远程管理 [14] RSS
-  * 安全相关 [40] RSS
-  * 性能监控 [8] RSS
-  * 常见服务 [52] RSS
-  * 商业软件 [6] RSS
-  * 数据库 [0] RSS
-  * Oracle [19] RSS
-  * Mysql [7] RSS
-  * 编程 [0] RSS
-  * Android [1] RSS
-  * ASP [4] RSS
-  * Bash [13] RSS
-  * C/C++ [2] RSS
-  * CSS [2] RSS
-  * Java [8] RSS
-  * JavaScript [34] RSS
-  * Perl [32] RSS
-  * Php [21] RSS
-  * Python [7] RSS
-  * (X)HTML [13] RSS
-  * 示例 [13] RSS
-  * 其他 [0] RSS
-  * 杂七杂八 [74] RSS
-  * 闲聊 [98] RSS
-  * Ebook [4] RSS
-  * Gentoo [2] RSS
-
-广告
-
-搜索
-
-[                    ] [日志标题]  搜索
-统计
-
-访问次数 6344007
-今日访问 2069
-日志数量 713
-评论数量 526
-引用数量 1
-留言数量 86
-注册用户 788
-在线人数 71
-
-全局搜索
-
-最新日志
-
-  * 从 ext4 磁盘中恢复...
-  * [原]在Windows ...
-  * [原]执行nova mi...
-  * [原]解决 OpenvS...
-  * [原]解决CentOS ...
-
-综合点击排行
-
-  * [203065][原]红帽 Re...
-  * [184147]宋韶光2009年...
-  * [134613][原]使用php...
-  * [102378]推荐一款基于云存...
-  * [101913][原]EMOS ...
-
-随机日志
-
-  * [原]创建ESXi 3 ...
-  * [原]PHP变量使用大括...
-  * [原]在红旗DC 4.1...
-  * 电脑通过乐Phone（3...
-  * [原]使用Vtonf管理...
-
-最新评论
-
-  * 这个真的很方便.非常感谢...
-  * 难得一见的好文,作者真的...
-  * 老大有6.8的程序吗
-  * 你好:想請問你這篇文章的...
-  * 你好:想請問你這篇文章的...
-
-归档
-
-  * 2016/04
-  * 2016/03
-  * 2016/02
-  * 2016/01
-  * 2015/12
-
-其他
-
-登入
-注册
-申请链接
-RSS:日志 | 评论
-编码:UTF-8
-XHTML 1.0
-
-链接
-
-  * 默认链接组
-  * 园软门户
-  * cnBeta.com
-  * 登陆日志
-  * Google Bookmarks
-  * 香港格價網
-  * 参考资料
-  * Mozilla Developer Network
-  * PHP Manual
-  * CakePHP手册
-  * jQuery API
-  * Interpreted Languages
-  * 技术网站
-  * 免费资源网络社群
-  * HowtoForge
-  * IT运维专家论坛
-  * 回忆未来[张宴]
-  * DBA notes
-  * FreeBSD China
-  * idv2.com
-  * 疯狂老头 BLOG
-  * LinuxMail.Info
-  * Nixcraft
-  * Alibaba DBA Team
-  * 彬Go
-  * Fwolf's Blog
-  * 友情链接
-  * 红旗漫卷
-  * Exceeder
-  * 爱百科
-  * badb0y's blog
-  * 鸭嘴的博客
-  * 博爱老头的草屋
-  * Selboo's Blog
-  * 枫叶集
-  * 扶凯
-  * 康盛博客
-  * 皮皮书屋
-  * meridian
-  * wxd5981
-
-Copyright © 2005-2008 迷·拾壹月 All rights reserved. | Template By Eiker | Powered by Bo-Blog 2.1.1
-ReleaseCode detection by Bug.Center.Team
-粤ICP备09022853号
-Run in 39 ms, 11 Queries, Gzip enabled.
-
-#+end_example
-** DONE fail2ban: protect SSH server from brute force attacks
-   CLOSED: [2016-05-12 Thu 06:50]
-https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04
-http://xmodulo.com/how-to-protect-ssh-server-from-brute-force-attacks-using-fail2ban.html
 ** [#A] autossh configuration                                     :IMPORTANT:
 https://www.everythingcli.org/ssh-tunnelling-for-fun-and-profit-autossh/
 https://linuxaria.com/howto/permanent-ssh-tunnels-with-autossh
@@ -795,18 +484,6 @@ sudo netstat -anp
 Kill the stale process:
 kill PID
 #+END_EXAMPLE
-** DONE [#A] Disable SSH Host Key Checking
-  CLOSED: [2016-09-02 Fri 22:38]
-http://www.shellhacks.com/en/HowTo-Disable-SSH-Host-Key-Checking
-
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no peter@192.168.0.100
-
-/etc/ssh/ssh_config
-Host *
-   StrictHostKeyChecking no
-   UserKnownHostsFile=/dev/null
-
-mac /etc/ssh_config
 ** DONE create a banner/welcome-note for SSH server: /etc/ssh/sshd_config: Banner file
    CLOSED: [2016-09-23 Fri 00:26]
 https://crybit.com/create-a-banner-ssh-server/
@@ -817,490 +494,6 @@ https://crybit.com/create-a-banner-ssh-server/
 Banner /etc/ssh/welcome.txt
 
 vim /etc/ssh/welcome.txt
-** TODO [#A] ssh tunnel
-http://superuser.com/questions/96489/an-ssh-tunnel-via-multiple-hops
-
-http://blog.trackets.com/2014/05/17/ssh-tunnel-local-and-remote-port-forwarding-explained-with-examples.html
-
-You basically have three possibilities:
-
-Tunnel from localhost to host1:
-
-ssh -L 9999:host2:1234 -N host1
-As noted above, the connection from host1 to host2 will not be secured.
-Tunnel from localhost to host1 and from host1 to host2:
-
-ssh -L 9999:localhost:9999 host1 ssh -L 9999:localhost:1234 -N host2
-This will open a tunnel from localhost to host1 and another tunnel from host1 to host2. However the port 9999 to host2:1234 can be used by anyone on host1. This may or may not be a problem.
-Tunnel from localhost to host1 and from localhost to host2:
-
-ssh -L 9998:host2:22 -N host1
-ssh -L 9999:localhost:1234 -N -p 9998 localhost
-This will open a tunnel from localhost to host1 through which the SSH service on host2 can be used. Then a second tunnel is opened from localhost to host2 through the first tunnel.
-*** web page: How to do SSH Tunneling (Port Forwarding) - Screen-cast - Ramki Blog
-http://www.ramkitech.com/2012/04/how-to-do-ssh-tunneling-port-forwarding.html
-**** webcontent                                                    :noexport:
-#+begin_example
-Location: http://www.ramkitech.com/2012/04/how-to-do-ssh-tunneling-port-forwarding.html
-  * About
-  * Sitemap
-  * Contact
-  * My Resume
-  *
-  *
-  *
-
-MENU
-
-Ramki Blog
-
-#
-Menu
-
-  * Home
-  * Tomcat Clustering
-      + Part 5
-      + Part 4
-      + Part 3
-      + Part 2
-      + Part 1
-  * IoT
-  * Android
-  * Hadoop
-
-[Search...           ]   
-
-#
-Ramki Blog Linux screencast SSH SSH Tunneling How to do SSH Tunneling (Port Forwarding) -
-Screen-cast
-
-How to do SSH Tunneling (Port Forwarding) - Screen-cast
-
-Rama krishnnan EP Saturday, April 28, 2012 #
-Rama krishnnan EP
-In this post we will see how ssh works?, what is SSH tunneling? what is important of ssh tunnels
-and how to setup the ssh tunnel.
-When SSH server is installed in machine then by default its allowed ssh tunneling.
-
-SSH Tunneling (Port Forwarding)
-Tunneling is the concept to encapsulate the network protocol to another protocol. here we put into
-SSH. so all network communication are encrypted. It also called Port Forwarding. because in ssh
-tunneling we are going to bind one local port. so what are the packet we are going to send that
-particular port, all packets are transparently encrypt and delivered to remote system.
-
-What is the need for SSH Tunneling?
-
-     SSH is enough to administrate the remote system. its not enough to access the all services
-which are available in remote system.
-let i describe in the following scenario,
-[scenario]
-
-now lets consider the scenario, System (192.168.56.101) is my system its connected to internet and
-server its called PrivateServer (192.168.56.102)  machine have two Ethernet interfaces. one is
-connected to Internet. and another is connected to 10.10.1.0/24 local network. Intranet
-(10.10.1.11) machine is part of 10.10.1.0/24  sub network.
-
-Note : here i mentioned local system(192.168.56.101) and remote system(192.168.56.102) are looking
-like local sub-net IP address. For VM purpose i used these IP address. But reality is it should be
-any public IP address.
-
-Important Note : SSH Server daemon service is running in port 22 in all these three system and
-firewall is allowed to connect these system using SSH client.
-
-now System (192.168.56.101) can communicate to PrivateServer (192.168.56.102), because both system
-are connected to internet directly. But System (192.168.56.101) can't communicate to Intranet
-(10.10.1.11) machine, because from System (192.168.56.101) perspective 10.10.1.11 is non route
-able IP address. 10.10.1.11 is not public IP address, its local IP address. so we can't route the
-packets directly.
-
-Now the situation like that from System(192.168.56.101) i want to access the Intranet (10.10.1.11)
-machine. without modifying IP tables, redirect, like tools/services in intermediate (or) target
-machine. Because i m not sys-admin, so i don't have root privilege.
-
-One of the possible solution is first use ssh to log in into PrivateServer(192.168.56.102) and then
-again (nested) log in  to Intranet(10.10.1.11). Yes its good idea, its works, now i can
-remotely administrate the Intranet(10.10.1.11). but if Intranet(10.10.1.11) offer some services
-like VNC, Apache httpd, smtp, pop3, squid proxy then how we can access these services from System
-(192.168.56.101)?
-
-here its not strictly Intranet(10.10.1.11) offer these service, it may be 10.10.1.0/24 sub net any
-one of the machine can offer these services. Even in 10.10.1.0/24 sub-net have one
-intranet-website. how we can access these site from System(192.168.56.101) machine Firefox?
-
-The solution is SSH Tunneling or SSH Port Forwarding
-
-How SSH Works
-
-            In terminal when we type ssh ramki@Private-Server.org  then terminal application invoke
-the ssh client, ssh client connect to Private-Server.org's SSH server in port 22. then both client
-and server exchange the identity,  public keys, cipher suite information and create one shell
-process in server side. then secure channel is established between client and server. then future
-all commands from 192.168.101 are go through this secure channel to server (192.168.56.102) and
-execute the command and the response are come back in same secure channel.
-
-For example after establish ssh, i will issue the ls command. the ls command goes to SSH client
-then that command encapsulate and encrypted then send to server. Server decrypt and extract the
-command and execute the command in shell (which is created when ssh is established), the output of
-ls command is not printed in shell. Its redirect the output to SSH client in same secure channel
-and follow the same procedure (encapsulate and encrypt) . and finally Terminal application shows
-the output of ls command.
-
-I think here all command is encoded to Base64 encoding before send to server and before encrypt.
-(But i am not sure)
-
-here very important note that SSH is not disturb  the port other than 22 (or which port ssh server
-is running).
-
-[ssh_works]
-
-SSH Tunneling
-      SSH can work many channel's simultaneously. In normal case we use shell channel. But now we
-are going to use data channel. so base concept is, in 192.168.56.101 machine ssh client bind one
-port and establish secure connection with server (192.168.56.102). and create one data channel and
-shell channel. (we can omit shell channel using -N option in ssh command).
-
-Now In system machine ( 192.168.56.101) any application send data to that port (which one ssh
-client is bind), then ssh client transparently receive the data and encrypt and sent to server
-machine. In server  ( 192.168.56.102) receive and decrypt it and make the local call. (we discuss
-later)
-
-SSH Tunneling types
-SSH offers three types of tunneling
-
-  * Dynamic Tunneling (SOCKS Proxy)
-  * Local Port Forwarding
-  * Remote Port Forwarding
-
-Dynamic Tunneling
-
-   Command :            ssh     -D 8080     ramki@192.168.56.102
-
-here -D 8080 is mention SOCKS v5 Proxy bind 8080 port in client side
-
-         Now ssh client in 192.168.56.101 machine create one SOCKS proxy server in client side and
-bind one local port.then connect to 192.168.56.102 remote machine and establish secure channel.
-
- Now all client application like Firefox, chrome,... need to configure the proxy setting  to SOCKS
-proxy server localhost and port number. (check video for reference below the post)
-
-Note : consider server (192.168.56.102) and Intranet (10.10.1.11) both machines run Apache httpd
-server and bind port 80
-
-After configuration is completes,
-in Firefox now type http://localhost/, we know that in client machine (192.168.56.101) there is no
-service is running in port 80. but when we hit enter in browser, we can see the website of server
-machine (192.168.56.102).
-
-How we can access server website using http://localhost/ in client machine?
-we configure the proxy in browser. so browser send all HTTP request (even localhost anf 127.0.0.1)
-to port 8080, here SOCKS proxy is running in that port. Then socks proxy server packs our HTTP
-request to ssh client and encrypt and send to server. Server decrypt and extract the HTTP Request.
-Now in server side the HTTP request http://localhost/ is point to server machine itself. so server
-invoke the request. If any service is running in port 80, is called and response is send back to
-client using same secure channel. so browser shows server webpage in client side.
-
-[dynamic]
-
-We know that from client machine (192.168.56.101), the IP address 10.10.1.11 is non routable. but
-now if we issue http://10.10.1.11/ in Firefox browser, its shows the 10.10.1.11 Apache server
-webpage.
-
-Advantage :
-
-  * One proxy server is enough to access the all services of remote machine and its sub-net
-    services
-
-Disadvantage:
-
-  * We need to configure the Proxy settings in client application, If application doesn't support
-    the proxy then we can't access the service.
-
-Local Port Forwarding
-
-Command :        ssh       -L  8000:localhost:80     ramki@192.168.56.102
-
-here syntax is   -L   <local port> : <remote hostname> : <remote service port>
-
-so when we execute the command, its bind port 8000 in client side. now what are request send to
-port 6000 its redirect to ssh client, then encrypt and send to server machine. now server directly
-delivered the data to port 80.
-
-In dynamic tunnel, server checks the packet and decide where we need to send the packet, for
-example http://localhost/ then its send to 80, smtp then send to 25. But in local port it always
-send to single port which one we mention during setup the local port forwarding <remote hostname> :
-<remote service port>
-
-this time in Firefox no need to configure the proxy, clear the proxy(if its present)
-and type in address bar  http://localhost:8000/
-then HTTP request is going to local port 8000, then its redirect and send to server. server
-directly send to port 80. (Its based on <remote hostname> : <remote service port>, here now
-localhost:80)
-
-[local1]
-
-If u want to access the 10.10.1.11 machine http service then we need to setup new local port
-forwarding.
-we can't use prior port forwarding. because old one always pointing to localhost:80.
-
-Command :             ssh   -L  8000:10.10.1.11:80   ramki@192.168.56.102
-
-now client side local port 8000 is redirected to 10.10.1.11:80 machine via 192.168.56.102.
-
-In Firefox using http://localhost:8080/ we can access the 10.10.1.11 machine http service.
-
-(For further reference check the video below. in video i show the how to access remote desktop
-using VNC)
-
-[local2]
-
-Advantage:
-
-  * no need to configure the proxy setting
-
-Disadvantage:
-
-  * Each service we need to setup different local port forwarding, (i.e for example, 2 port
-    forwarding is needed to get 192.168.56.102 and 10.10.1.11 http services)
-
-Remote Port Forwarding
-
-Remote port forwarding is same like local port forwarding. but this time we need to set the port
-forwarding in server side(192.168.56.102), not client side
-
-Command :        ssh    -R 8000:localhost:80       ramki@192.168.56.101
-here very important changes is from server we going to connect client, so  ramki@192.168.56.101
- here its 192.168.56.101 not 102.
-
-when we execute this command its connect to client and create 8000 port in client side(not server
-side).
-as usual client use its local port 8000 to connect server. like local port forwarding.
-
-Why Remote Port Forwarding is Important?
-    Its rarely used, when we worked the machine. that machine is inside the NAT. so from outside no
-one can access it. that kind of situation physically access the machine and connect back to our
-client system (192.168.56.101) using remote port forward. then from client machine we can access
-the services.(Its seems to be little bit confusing, but its simple)
-
-In Windows Machine
-   In windows machine if want to run ssh server then there is lots of ssh servers are available
-WinSSHD freeSSHd, openssh. If we want only ssh client then we can use Putty.
-
-suppose in System(192.168.56.101) i am using Windows then how we access the ssh tunneling.
-
-open the putty and type the host ramki@192.168.56.102 and select Connection->SSH->Tunnels (see the
-image), then type 8080 in source port and select Dynamic, if u want dynamic tunnel (Its equal to -D
-8080 in command option)
-
-[putty]
-
-If we want local port forwarding then put any unused port 6000 in source port and destination is
-localhost:80 and select Local. (Its equal to -L 6000:localhost:80)
-
-[putty1]
-
-If u want to access 10.10.1.11 machine  the remote desktop then make local port forward (check
-above image) and Destination is 10.10.1.11:5900 here 5900 is the port used by vnc server. then
-using any vnc client (here i used tightvnc client) to connect ur local port 6000
-so mention localhost::6000,   here we need to mention double colon ::, because in vnc client port
-no is specified in this manner. (Check the video )
-
-[vnc]
-
-Bypass Firewall
-                 This SSH Tunnel concept can be use to bypass firewall. lets consider the scenario.
-In server side its enable firewall and some service are running and these services are can access
-through localhost or same machine. but u can't access through remote machine. because firewall
-block the all the port except ssh port (22).
-
-this kind of situation we use tunnel and almost all services can be accessed from outside. because
-firewall is rule based. In firewall perspective all traffic is goes through port 22. so its
-allowed. but internally we made tunnel and access all services.
-
-How to prevent SSH Tunnel
-      Open the ssh server config file /etc/ssh/sshd_config  then set the parameter
-AllowTcpForwarding no
-then restart ssh service. then they not allow the ssh tunnel service, but still we can access ssh
-shell service.
-
-But in ssh man page they clearly mentioned
-
-" Note that disabling TCP forwarding does not improve security unless users are also denied shell
-access, as they can always install their own forwarders. "
-so still we can use use ssh tunnel even though  we set AllowTcpForwarding no. (I will show in my
-next post)
-
-I hope everything is clear. If any misunderstanding please let me know.
-
-Screen cast (Watch in HD)
-
-Resources:
-
-  * SSH, The Secure Shell: The Definitive Guide
-
-Comments Welcomed
-
-  * Twitter
-  * Facebook
-  * Google
-  * Tumblr
-  * Pinterest
-
-Artikel Menarik Lainnya
-
-Next
-« Prev Post
-Previous
-Next Post »
-
-#
-
-Google+ Badge
-
-Total Pageviews
-
-#
-
-Popular Posts
-
-  * [outline_st]
-    Virtual Host + Apache httpd server + Tomcat + mod_jk connector
-    In my last post ( Virtual Host in Tomcat ) we discussed about how setup the virtual host in
-    Tomcat. Its cost effective technique because on...
-
-  * [virtual_ho]
-    Understanding Virtual Host Concept in Tomcat
-    Hi in this post we will see how to setup virtual host in Apache Tomcat server. Virtual Host is
-    in-built feature that allows to deploy multi...
-
-  * [normal_dep]
-    Tomcat Clustering Series Part 1 : Simple Load Balancer
-    I am going to start new series of posts about Tomcat clustering . In this first post we will
-    see what is problem in normal deployment in on...
-
-  * [scenario]
-    How to do SSH Tunneling (Port Forwarding) - Screen-cast
-    In this post we will see how ssh works?, what is SSH tunneling? what is important of ssh
-    tunnels and how to setup the ssh tunnel. When SS...
-
-  * [jasperrepo]
-    JSF + JPA + JasperReports (iReport) Part 1
-    Hi in this post we will see the overview of  JasperReports  and how to integrate into JSF
-    application. JasperReports is the world's mo...
-
-  * [tomcat_str]
-    Running Multiple Tomcat Instances on Single Machine
-    In this post we will see how to run multiple tomcat instances on single machine and under
-    single user account. We first see the  tomcat di...
-
-  * [default]
-    File Upload is Easy in JSF2.2
-    To bring the File Upload feature in Java based web application is one of the difficult and
-    complex job, we need to dependent on 3rd party l...
-
-  * [session-re]
-    Tomcat Clustering Series Part 3 : Session Replication
-    Hi this is my third part of the  Tomcat Clustering Series . In this post we are going to
-    discuss the how to setup session replication in t...
-
-  * [tomcat_sim]
-    Tomcat Clustering Series Part 5 : NginX as Load Balancer
-    Hi this is my fifth part of the  Tomcat Clustering Series . In this post we are going to
-    discuss how to replace Apache httpd load balancer ...
-
-  * [sample_app]
-    Beware of SQLInjection in Java Application
-    Hi In this post we will discuss what is SQL Injection attack. and how its may affect ur any
-     web application its use the backend database...
-
-#
-
-Blog Archive
-
-  * ►  2016 ( 1 )
-      + ►  February ( 1 )
-
-  * ►  2015 ( 2 )
-      + ►  November ( 1 )
-      + ►  October ( 1 )
-
-  * ►  2013 ( 4 )
-      + ►  August ( 1 )
-      + ►  June ( 2 )
-      + ►  January ( 1 )
-
-  * ▼  2012 ( 13 )
-      + ►  December ( 1 )
-      + ►  November ( 1 )
-      + ►  October ( 2 )
-      + ►  September ( 2 )
-      + ►  June ( 2 )
-      + ▼  April ( 2 )
-          o How to do SSH Tunneling (Port Forwarding) - Screen...
-          o How to compile kernel step by step
-      + ►  March ( 1 )
-      + ►  February ( 1 )
-      + ►  January ( 1 )
-
-  * ►  2011 ( 9 )
-      + ►  December ( 1 )
-      + ►  November ( 1 )
-      + ►  July ( 3 )
-      + ►  June ( 4 )
-
-  * ►  2010 ( 7 )
-      + ►  December ( 3 )
-      + ►  November ( 4 )
-
-#
-
-Labels
-
-screencast ( 26 ) Java EE 6 ( 10 ) JSF 2.0 ( 7 ) multiple_instances ( 7 ) JSF ( 6 ) load balancer (
-6 ) tomcat clustering ( 6 ) JasperReports ( 5 ) Java EE 7 ( 5 ) Linux ( 4 ) session replication ( 4
-) iReport ( 3 ) IoT ( 2 ) Raspberry Pi ( 2 ) mqtt ( 2 ) nginx ( 2 )
-#
-
-Follow by Email
-
-[                    ]                                                                      Submit
-
-#
-
-JCG
-
-"java
-
-#
-
-Powered by Blogger.
-
-#
-
-#
-
-About Me
-
-My Photo
-
-Rama krishnnan EP
-
-View my complete profile
-#
-
-Copyright © 2015 Ramki Blog - All Rights Reserved - Template by Arlina Design | Distributed By
-Gooyaabi Templates
-Design by Libs Blogger
-
-#+end_example
-** DONE Mac Laptop Disable SSH Host Key Checking
-  CLOSED: [2016-09-21 Wed 13:54]
-Host *
-   StrictHostKeyChecking no
-   UserKnownHostsFile=/dev/null
-
-mac /etc/ssh_config
-
-http://www.shellhacks.com/en/HowTo-Disable-SSH-Host-Key-Checking
 ** DONE SSH security – weak ciphers and mac algorithms
   CLOSED: [2017-01-23 Mon 15:07]
 /etc/ssh/sshd_config: Ciphers and MACs sections
@@ -1614,36 +807,11 @@ ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
 ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
 ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
 #+END_EXAMPLE
-** DONE Add passphrase protection to your ssh deploy key
-  CLOSED: [2017-06-12 Mon 16:47]
-https://github.com/jcalazan/ansible-django-stack/issues/11
-https://coderwall.com/p/rdi_wq/fix-could-not-open-a-connection-to-your-authentication-agent-when-using-ssh-add
-https://bitbucket.org/nubesecure/devops/issues/106/nightly-deployment-process-should-pull
-
-eval $(ssh-agent)
-
-ssh-agent
-ssh-add /root/.ssh/bitbucket_id_rsa
-
-soteriaDevOps123
-ssh -i /var/jenkins_home/.ssh/id_rsa -p 2702 root@iot.shibgeek.com "cd /opt/soteria/chatops/devops; git pull"
-
-SSH_AUTH_SOCK=/tmp/ssh-CQvj4eoYn5ha/agent.2340
-export SSH_AUTH_SOCK
-SSH_AGENT_PID=2340; export SSH_AGENT_PID;
-
-cd /tmp/sandbox/devops
-git pull
-
-ssh -i /var/jenkins_home/.ssh/id_rsa -p 2702 root@iot.shibgeek.com "export SSH_AUTH_SOCK=/tmp/ssh-CQvj4eoYn5ha/agent.2340; export SSH_AGENT_PID=2340; cd /tmp/sandbox/devops; git pull"
-
-> /usr/sbin/git_pull_codedir.sh && vim /usr/sbin/git_pull_codedir.sh
-bash git_pull_codedir.sh "/tmp/sandbox/devops"
 ** DONE Show error for ssh login
   CLOSED: [2017-09-04 Mon 10:41]
 https://askubuntu.com/questions/586806/aws-ec2-set-up-key-and-non-key-authentication-at-same-time
 no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="echo 'Please login as the user \"ubuntu\" rather than the user \"root\".';echo;sleep 10"
-** DONE SCP from one external server to another
-   CLOSED: [2018-01-23 Tue 10:04]
+* DONE SCP from one external server to another                     :noexport:
+  CLOSED: [2018-01-23 Tue 10:04]
 https://unix.stackexchange.com/questions/184379/scp-from-one-server-to-another-server
 https://superuser.com/questions/66949/scp-from-one-external-server-to-another
