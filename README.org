@@ -63,7 +63,7 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Reverse port forward to remote server | =ssh -R *:40099:localhost:22 root@54.179.178.214=, =ssh -p 40099 root@54.179.178.214=   |
 | Export local env to Internet          | [[https://ngrok.com/][ngrok.com]]                                                                               |
 
-** SSH key file
+** SSH files
 | Name                                     | Summary                                                              |
 |------------------------------------------+----------------------------------------------------------------------|
 | Generate a new key pair                  | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=        |
@@ -72,6 +72,8 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Convert OpenSSL format to SSH-RSA format | =ssh-keygen -f my_ssh.pub -i=                                        |
 | Critical ssh files/folders               | =~/.ssh/authorized_keys=, =~/.ssh/config=, =~/.ssh/known_hosts=      |
 | SSH config file                          | =/etc/ssh/ssh_config=, =/etc/ssh/sshd_config=                        |
+| SSH folder permission                    | =chmod 700 "~/.ssh"=, =chown -R $USER:$USER "~/.ssh"=                |
+| Authorized_keys file permission          | =chmod 644 "~/.ssh/authorized_keys"=                                 |
 
 ** Parse ssh log file
 | Name                              | Command                                                                        |
