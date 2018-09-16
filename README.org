@@ -25,23 +25,28 @@ File me [[https://github.com/DennyZhang/cheatsheet-ssh-A4/issues][Issues]] or st
 See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
 - Related post: [[https://cheatsheet.dennyzhang.com/cheatsheet-tmux-A4][Tmux/Tmate Cheatsheet]] 
-** ssh general
-| Name                            | Summary                                                                                  |
-|---------------------------------+------------------------------------------------------------------------------------------|
-| Install ssh server              | =apt-get install openssh=                                                                |
-| Run ssh command                 | =ssh -o StrictHostKeyChecking=no -p 2702 root@172.17.0.8 date=                           |
-| SSH passwordless login          | =ssh-copy-id <username>@<ssh_host>=, manually update =~/.ssh/authorized_keys=            |
-| Diff local file with remote one | =diff local_file.txt <(ssh <username>@<ssh_host> 'cat remote_file.txt')=                 |
-| Diff two remote ssh files       | =diff <(ssh user@remote_host 'cat file1.txt') <(ssh user2@remote_host2 'cat file2.txt')= |
-| SSH agent load key              | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                           |
+** SSH general
+| Name                                    | Summary                                                                                  |
+|-----------------------------------------+------------------------------------------------------------------------------------------|
+| Install ssh server                      | =apt-get install openssh=                                                                |
+| Run ssh command                         | =ssh -o StrictHostKeyChecking=no -p 2702 root@172.17.0.8 date=                           |
+| SSH with verbose ouptut                 | =ssh -vvv -p 2702 root@45.33.87.74 date 2>&1=                                            |
+| SSH passwordless login                  | =ssh-copy-id <username>@<ssh_host>=, Or manually update =~/.ssh/authorized_keys=         |
+| Remove an entry from =known_hosts file= | =ssh-keygen -f ~/.ssh/known_hosts -R github.com=                                         |
+| Diff local file with remote one         | =diff local_file.txt <(ssh <username>@<ssh_host> 'cat remote_file.txt')=                 |
+| Diff two remote ssh files               | =diff <(ssh user@remote_host 'cat file1.txt') <(ssh user2@remote_host2 'cat file2.txt')= |
+| Upload with timestamps/permissions kept | =scp -rp /tmp/abc/ ec2-user@<ssh-host>:/root/=                                           |
+| SSH agent load key                      | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                           |
+| Emacs read remote file with tramp       | =emacs /ssh:<username>@<ssh_host>:/path/to/file=                                         |
 
-** scp
+** SCP
 | Name                                    | Summary                                                      |
 |-----------------------------------------+--------------------------------------------------------------|
 | Download a remote folder                | =scp -r ec2-user@<ssh-host>:/home/letsencrypt-20180825 ./=   |
 | Upload a file                           | =scp -i <ssh-keyfile> /tmp/hosts ec2-user@<ssh-host>:/root/= |
 | Upload a folder                         | =scp -r /tmp/abc/ ec2-user@<ssh-host>:/root/=                |
 | Upload with timestamps/permissions kept | =scp -rp /tmp/abc/ ec2-user@<ssh-host>:/root/=               |
+| Mount remote directory as local folder  | =sshfs name@server:/path/remote_folder /path/local_folder=   |
 
 ** SSH security
 | Name                                        | Summary                                                                                  |
@@ -131,11 +136,12 @@ autossh -M 40000 -p 2702 -i /home/denny/al -fN \
 ** More Resources
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
 
+#+BEGIN_EXAMPLE
+https://computingforgeeks.com/ssh-cheatsheet-for-sysadmins/
 https://neverendingsecurity.wordpress.com/2015/04/07/ssh-cheatsheet/
-
 http://patrickward.com/cheatsheets/2015/02/16/ssh-cheatsheet/
-
 https://bitrot.sh/cheatsheet/13-12-2017-ssh-cheatsheet/
+#+END_EXAMPLE
 
 #+BEGIN_HTML
 <a href="https://www.dennyzhang.com"><img align="right" width="201" height="268" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/denny_201706.png"></a>
@@ -171,7 +177,6 @@ https://bitrot.sh/cheatsheet/13-12-2017-ssh-cheatsheet/
 #+LINK_UP:
 #+LINK_HOME:
 * TODO [#A] Blog: Advanced Usage Of SSH                            :noexport:
-** ssh -v
 ** [#A] Configure EC2 instance for ssh login                      :IMPORTANT:
 sudo su -
 sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
@@ -492,4 +497,8 @@ ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
   CLOSED: [2017-09-04 Mon 10:41]
 https://askubuntu.com/questions/586806/aws-ec2-set-up-key-and-non-key-authentication-at-same-time
 no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="echo 'Please login as the user \"ubuntu\" rather than the user \"root\".';echo;sleep 10"
+* TODO Connect and forward the authentication agent                :noexport:
+https://computingforgeeks.com/ssh-cheatsheet-for-sysadmins/
 * TODO ssh with rsync                                              :noexport:
+* TODO Create a SOCKS proxy tunnel                                 :noexport:
+https://computingforgeeks.com/ssh-cheatsheet-for-sysadmins/
