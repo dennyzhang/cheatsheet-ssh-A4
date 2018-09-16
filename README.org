@@ -72,8 +72,9 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Convert OpenSSL format to SSH-RSA format | =ssh-keygen -f my_ssh.pub -i=                                        |
 | Critical ssh files/folders               | =~/.ssh/authorized_keys=, =~/.ssh/config=, =~/.ssh/known_hosts=      |
 | SSH config file                          | =/etc/ssh/ssh_config=, =/etc/ssh/sshd_config=                        |
-| SSH folder permission                    | =chmod 700 "~/.ssh"=, =chown -R $USER:$USER "~/.ssh"=                |
-| Authorized_keys file permission          | =chmod 644 "~/.ssh/authorized_keys"=                                 |
+| SSH key file permission                  | =chmod 600 ~/.ssh/id_rsa=                                            |
+| SSH folder permission                    | =chmod 700 ~/.ssh=, =chown -R $USER:$USER ~/.ssh=                    |
+| Authorized_keys file permission          | =chmod 644 ~/.ssh/authorized_keys=                                   |
 
 ** Parse ssh log file
 | Name                              | Command                                                                        |
@@ -143,6 +144,7 @@ https://computingforgeeks.com/ssh-cheatsheet-for-sysadmins/
 https://neverendingsecurity.wordpress.com/2015/04/07/ssh-cheatsheet/
 http://patrickward.com/cheatsheets/2015/02/16/ssh-cheatsheet/
 https://bitrot.sh/cheatsheet/13-12-2017-ssh-cheatsheet/
+https://gist.github.com/CodyKochmann/166833b3b31cdb936d69
 #+END_EXAMPLE
 
 #+BEGIN_HTML
