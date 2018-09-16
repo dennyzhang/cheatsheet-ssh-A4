@@ -26,22 +26,22 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 
 - Related post: [[https://cheatsheet.dennyzhang.com/cheatsheet-tmux-A4][Tmux/Tmate Cheatsheet]] 
 ** ssh general
-| Name                                     | Summary                                                                                               |
-|------------------------------------------+-------------------------------------------------------------------------------------------------------|
-| Install ssh server                       | =apt-get install openssh=                                                                             |
-| Run ssh command by muting host key check | =ssh -o StrictHostKeyChecking=no -p 2702 root@172.17.0.8 date=                                        |
-| SSH passwordless login                   | =ssh-copy-id <username>@<ssh_host>=, manually update =~/.ssh/authorized_keys=                         |
-| Diff local file with remote ssh file     | =diff local_file.txt <(ssh <username>@<ssh_host> 'cat remote_file.txt')=                              |
-| Diff two remote ssh files                | =diff <(ssh user@remote_host 'cat remote_file.txt') <(ssh user2@remote_host2 'cat remote_file2.txt')= |
-| SSH agent load key                       | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                                        |
+| Name                            | Summary                                                                                  |
+|---------------------------------+------------------------------------------------------------------------------------------|
+| Install ssh server              | =apt-get install openssh=                                                                |
+| Run ssh command                 | =ssh -o StrictHostKeyChecking=no -p 2702 root@172.17.0.8 date=                           |
+| SSH passwordless login          | =ssh-copy-id <username>@<ssh_host>=, manually update =~/.ssh/authorized_keys=            |
+| Diff local file with remote one | =diff local_file.txt <(ssh <username>@<ssh_host> 'cat remote_file.txt')=                 |
+| Diff two remote ssh files       | =diff <(ssh user@remote_host 'cat file1.txt') <(ssh user2@remote_host2 'cat file2.txt')= |
+| SSH agent load key              | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                           |
 
 ** scp
-| Name                                    | Summary                                                                     |
-|-----------------------------------------+-----------------------------------------------------------------------------|
-| Download a remote folder                | =scp -r -i <ssh-keyfile> ec2-user@<ssh-host>:/home/letsencrypt-20180825 ./= |
-| Upload a file                           | =scp /tmp/hosts ec2-user@<ssh-host>:/root/=                                 |
-| Upload a folder                         | =scp -r /tmp/abc/ ec2-user@<ssh-host>:/root/=                               |
-| Upload with timestamps/permissions kept | =scp -rp /tmp/abc/ ec2-user@<ssh-host>:/root/=                              |
+| Name                                    | Summary                                                      |
+|-----------------------------------------+--------------------------------------------------------------|
+| Download a remote folder                | =scp -r ec2-user@<ssh-host>:/home/letsencrypt-20180825 ./=   |
+| Upload a file                           | =scp -i <ssh-keyfile> /tmp/hosts ec2-user@<ssh-host>:/root/= |
+| Upload a folder                         | =scp -r /tmp/abc/ ec2-user@<ssh-host>:/root/=                |
+| Upload with timestamps/permissions kept | =scp -rp /tmp/abc/ ec2-user@<ssh-host>:/root/=               |
 
 ** SSH security
 | Name                                        | Summary                                                                                  |
@@ -52,20 +52,21 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Protect SSH server from brute force attacks | [[https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04][fail2ban command line tool]]                                                               |
 
 ** SSH tunnel
-| Name                                              | Summary                                                                                       |
-|---------------------------------------------------+-----------------------------------------------------------------------------------------------|
-| SSH port forward to a local port                  | =ssh -N -p 22 -i <ssh-keyfile> -f root@54.179.178.214 -L *:18085:localhost:8085 -n /bin/bash= |
-| Reverse port forward to a remote ssh server       | =ssh -R *:40099:localhost:22 root@54.179.178.214=, =ssh -p 40099 root@54.179.178.214=         |
-| Export local env to Internet by ssh reverse proxy | [[https://ngrok.com/][ngrok.com]]                                                                                     |
+| Name                                  | Summary                                                                                 |
+|---------------------------------------+-----------------------------------------------------------------------------------------|
+| SSH port forward to a local port      | =ssh -N -i <ssh-keyfile> -f root@54.179.178.214 -L *:18085:localhost:8085 -n /bin/bash= |
+| Reverse port forward to remote server | =ssh -R *:40099:localhost:22 root@54.179.178.214=, =ssh -p 40099 root@54.179.178.214=   |
+| Export local env to Internet          | [[https://ngrok.com/][ngrok.com]]                                                                               |
 
 ** SSH key file
-| Name                                     | Summary                                                                                 |
-|------------------------------------------+-----------------------------------------------------------------------------------------|
-| Generate a new key pair                  | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=                           |
-| Generate key pair without interaction    | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                                             |
-| Add passphrase protection to ssh keyfile | =ssh-keygen -p -f id_rsa=  [[https://www.dennyzhang.com/ssh_passphrase][link: Manage SSH Key File With Passphrase]]                    |
-| Convert OpenSSL format to SSH-RSA format | =ssh-keygen -f my_ssh.pub -i=                                                           |
-| Critical ssh files/folders               | =~/.ssh/authorized_keys=, =~/.ssh/config=, =~/.ssh/known_hosts=, =/etc/ssh/sshd_config= |
+| Name                                     | Summary                                                              |
+|------------------------------------------+----------------------------------------------------------------------|
+| Generate a new key pair                  | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=        |
+| Generate key pair without interaction    | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                          |
+| Add passphrase protection to ssh keyfile | =ssh-keygen -p -f id_rsa=  [[https://www.dennyzhang.com/ssh_passphrase][link: Manage SSH Key File With Passphrase]] |
+| Convert OpenSSL format to SSH-RSA format | =ssh-keygen -f my_ssh.pub -i=                                        |
+| Critical ssh files/folders               | =~/.ssh/authorized_keys=, =~/.ssh/config=, =~/.ssh/known_hosts=      |
+| SSH config file                          | =/etc/ssh/ssh_config=, =/etc/ssh/sshd_config=                        |
 
 ** Parse ssh log file
 | Name                              | Command                                                                        |
