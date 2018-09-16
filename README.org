@@ -23,52 +23,71 @@
 File me [[https://github.com/DennyZhang/cheatsheet-ssh-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-ssh-A4][this repo]].
 
 See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
-** ssh general
-| Name                                        | Summary                                                                                   |
-|---------------------------------------------+-------------------------------------------------------------------------------------------|
-| run ssh command by muting host key check    | =ssh -o StrictHostKeyChecking=no root@192.168.75.109 date=                                |
-| ssh tunnel                                  | =ssh -N -p 22 -i <ssh-keyfile> -f root@172.17.0.8 -L *:18085:localhost:8085 -n /bin/bash= |
-| ssh agent load key                          | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                            |
-| generate a new key pair                     | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=                             |
-| generate a new key pair without interaction | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                                               |
-| [[https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04][fail2ban]]                                    | protect SSH server from brute force attacks                                               |
 
-** advanced ssh
-| Name                                 | Summary                                                                                               |
-|--------------------------------------+-------------------------------------------------------------------------------------------------------|
-| Diff local file with remote ssh file | =diff local_file.txt <(ssh user@remote_host 'cat remote_file.txt')=                                   |
-| Diff two remote ssh files            | =diff <(ssh user@remote_host 'cat remote_file.txt') <(ssh user2@remote_host2 'cat remote_file2.txt')= |
-** ssh security
-| Name                                     | Summary                                                                                  |
-|------------------------------------------+------------------------------------------------------------------------------------------|
-| Disable ssh by password                  | =sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config= |
-| Disable root login                       | =sed -i 's/^PermitRootLogin yes/#PermitRootLogin yes/' /etc/ssh/sshd_config=             |
-| Enable/Disable SSH Host Key Checking     | =StrictHostKeyChecking yes= change ~/.ssh/config                                         |
-| Add passphrase protection to ssh keyfile | =ssh-keygen -p -f id_rsa=  [[https://www.dennyzhang.com/ssh_passphrase][link: Manage SSH Key File With Passphrase]]                     |
+- Related post: [[https://cheatsheet.dennyzhang.com/cheatsheet-tmux-A4][Tmux/Tmate Cheatsheet]] 
+** ssh general
+| Name                                     | Summary                                                                                               |
+|------------------------------------------+-------------------------------------------------------------------------------------------------------|
+| Install ssh server                       | =apt-get install openssh=                                                                             |
+| Run ssh command by muting host key check | =ssh -o StrictHostKeyChecking=no -p 2702 root@172.17.0.8 date=                                        |
+| SSH passwordless login                   | =ssh-copy-id <username>@<ssh_host>=, manually update =~/.ssh/authorized_keys=                         |
+| Diff local file with remote ssh file     | =diff local_file.txt <(ssh <username>@<ssh_host> 'cat remote_file.txt')=                              |
+| Diff two remote ssh files                | =diff <(ssh user@remote_host 'cat remote_file.txt') <(ssh user2@remote_host2 'cat remote_file2.txt')= |
+| SSH agent load key                       | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                                        |
 
 ** scp
-| Name                   | Summary                                                                     |
-|------------------------+-----------------------------------------------------------------------------|
-| Download remote folder | =scp -r -i <ssh-keyfile> ec2-user@<ssh-host>:/home/letsencrypt-20180825 ./= |
+| Name                                    | Summary                                                                     |
+|-----------------------------------------+-----------------------------------------------------------------------------|
+| Download a remote folder                | =scp -r -i <ssh-keyfile> ec2-user@<ssh-host>:/home/letsencrypt-20180825 ./= |
+| Upload a file                           | =scp /tmp/hosts ec2-user@<ssh-host>:/root/=                                 |
+| Upload a folder                         | =scp -r /tmp/abc/ ec2-user@<ssh-host>:/root/=                               |
+| Upload with timestamps/permissions kept | =scp -rp /tmp/abc/ ec2-user@<ssh-host>:/root/=                              |
 
-** parse ssh log
-| Name                    | Command                                                                        |
-|-------------------------+--------------------------------------------------------------------------------|
-| ssh down                | =grep -R "ssh.*Received signal 15" /var/log/auth.log=                          |
-| ssh up                  | =grep -R "sshd.*Server listening" /var/log/auth.log=                           |
-| ssh failed login        | =grep -R "sshd.*Failed password for invalid user" /var/log/auth.log=           |
-| ssh break-in attemp     | =grep -R "sshd.*POSSIBLE BREAK-IN ATTEMPT!" /var/log/auth.log=                 |
-| ssh port scap           | =grep -R "sshd.*Bad protocol version identification" /var/log/auth.log=        |
-| ssh login by public key | =grep -R "sshd.*Accepted publickey for" /var/log/auth.log=                     |
-| ssh login by password   | =grep -R "sshd.*Accepted password for" /var/log/auth.log=                      |
-| ssh logout event        | =grep -R "sshd.*pam_unix(sshd:session): session closed for" /var/log/auth.log= |
-** Common Config
-- Inject ssh public key
-#+BEGIN_EXAMPLE
-echo "ssh-rsa AAA...0r contact@dennyzhang.com" >>  ~/.ssh/authorized_keys
-#+END_EXAMPLE
+** SSH security
+| Name                                        | Summary                                                                                  |
+|---------------------------------------------+------------------------------------------------------------------------------------------|
+| Disable ssh by password                     | =sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config= |
+| Disable root login                          | =sed -i 's/^PermitRootLogin yes/#PermitRootLogin yes/' /etc/ssh/sshd_config=             |
+| Enable/Disable SSH Host Key Checking        | =StrictHostKeyChecking yes= change =~/.ssh/config=                                       |
+| Protect SSH server from brute force attacks | [[https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04][fail2ban command line tool]]                                                               |
 
-- Define ssh alias
+** SSH tunnel
+| Name                                              | Summary                                                                                       |
+|---------------------------------------------------+-----------------------------------------------------------------------------------------------|
+| SSH port forward to a local port                  | =ssh -N -p 22 -i <ssh-keyfile> -f root@54.179.178.214 -L *:18085:localhost:8085 -n /bin/bash= |
+| Reverse port forward to a remote ssh server       | =ssh -R *:40099:localhost:22 root@54.179.178.214=, =ssh -p 40099 root@54.179.178.214=         |
+| Export local env to Internet by ssh reverse proxy | [[https://ngrok.com/][ngrok.com]]                                                                                     |
+
+** SSH key file
+| Name                                     | Summary                                                                                 |
+|------------------------------------------+-----------------------------------------------------------------------------------------|
+| Generate a new key pair                  | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=                           |
+| Generate key pair without interaction    | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                                             |
+| Add passphrase protection to ssh keyfile | =ssh-keygen -p -f id_rsa=  [[https://www.dennyzhang.com/ssh_passphrase][link: Manage SSH Key File With Passphrase]]                    |
+| Convert OpenSSL format to SSH-RSA format | =ssh-keygen -f my_ssh.pub -i=                                                           |
+| Critical ssh files/folders               | =~/.ssh/authorized_keys=, =~/.ssh/config=, =~/.ssh/known_hosts=, =/etc/ssh/sshd_config= |
+
+** Parse ssh log file
+| Name                              | Command                                                                        |
+|-----------------------------------+--------------------------------------------------------------------------------|
+| Events of ssh down                | =grep -R "ssh.*Received signal 15" /var/log/auth.log=                          |
+| Events of ssh up                  | =grep -R "sshd.*Server listening" /var/log/auth.log=                           |
+| Events of ssh failed login        | =grep -R "sshd.*Failed password for invalid user" /var/log/auth.log=           |
+| Events of ssh break-in attemp     | =grep -R "sshd.*POSSIBLE BREAK-IN ATTEMPT!" /var/log/auth.log=                 |
+| Events of ssh port scap           | =grep -R "sshd.*Bad protocol version identification" /var/log/auth.log=        |
+| Events of ssh login by public key | =grep -R "sshd.*Accepted publickey for" /var/log/auth.log=                     |
+| Events of ssh login by password   | =grep -R "sshd.*Accepted password for" /var/log/auth.log=                      |
+| Events of ssh logout event        | =grep -R "sshd.*pam_unix(sshd:session): session closed for" /var/log/auth.log= |
+
+** Scripts
+- Inject local key to remote ssh server server
+#+BEGIN_SRC sh
+cat ~/.ssh/id_rsa.pub | ssh $username@$ssh_hostk "cat - >> ~/.ssh/authorized_keys"
+
+ssh $username@$ssh_hostk "cat ~/.ssh/authorized_keys"
+#+END_SRC
+
+- SSH Config file
 #+BEGIN_EXAMPLE
 Host sandbox
      HostName 192.168.50.10
@@ -82,14 +101,6 @@ Host 192.168.1.*
    Port 32882
    UserKnownHostsFile=/dev/null
    IdentityFile ~/.ssh/id_rsa
-#+END_EXAMPLE
-
-- Turn off host key checking for all hosts
-#+BEGIN_EXAMPLE
-# In ~/.ssh/config or /etc/ssh/ssh_config
-
-Host *
-    StrictHostKeyChecking no
 #+END_EXAMPLE
 
 - Use expect to run ssh command with credential auto input
@@ -118,6 +129,13 @@ autossh -M 40000 -p 2702 -i /home/denny/al -fN \
 #+END_EXAMPLE
 ** More Resources
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
+
+https://neverendingsecurity.wordpress.com/2015/04/07/ssh-cheatsheet/
+
+http://patrickward.com/cheatsheets/2015/02/16/ssh-cheatsheet/
+
+https://bitrot.sh/cheatsheet/13-12-2017-ssh-cheatsheet/
+
 #+BEGIN_HTML
 <a href="https://www.dennyzhang.com"><img align="right" width="201" height="268" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/denny_201706.png"></a>
 <a href="https://www.dennyzhang.com"><img align="right" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
@@ -257,229 +275,6 @@ ssh -i /home/denny/test -fN -o "PubkeyAuthentication=yes" -o "StrictHostKeyCheck
 ssh -i /home/denny/test1 -4 -N -p 19995 -f root@123.57.240.189 -L *:48080:localhost:48080 -n /bin/bash
 
 autossh -M 48081 -4 -p 19995 -i /home/denny/test1 -fN -o "PubkeyAuthentication=yes" -o "StrictHostKeyChecking=false" -o "PasswordAuthentication=no" -o "ServerAliveInterval 60" -o "ServerAliveCountMax 3" -L  123.57.240.189:48080:localhost:48080 root@123.57.240.189
-*** web page: Aptible Blog Archives - Reverse SSH tunneling with AWS
-http://aptible-archives.tumblr.com/post/56897638120/reverse-ssh-tunneling-with-aws
-**** webcontent                                                    :noexport:
-#+begin_example
-Location: http://aptible-archives.tumblr.com/post/56897638120/reverse-ssh-tunneling-with-aws
-[web-horizo]
-
-Aptible Blog Archives
-
-This is an archive of posts from 2013, before we moved the main Aptible blog to a shared account.
-
-You can visit us at our main site or the current blog.
-
-Feel free to call us at (866) 296-5003 if you have questions about HIPAA.
-This is an archive of posts from 2013, before we moved the main Aptible blog to a shared account.
-
-You can visit us at our main site or the current blog.
-
-Feel free to call us at (866) 296-5003 if you have questions about HIPAA.
-
-  * rss
-  * archive
-
-  * Reverse SSH tunneling with AWS
-
-    I mostly blog about healthcare here, but I wanted to put up a quick tutorial on reverse
-    tunneling for developers. There are plenty of explanations out there, but I wanted to write one
-    that is simple, easy to understand, and repeatable.
-
-    What is reverse tunneling, and why is it useful for web developers?
-
-    SSH, or Secure Shell, is a cryptographic network protocol that allows us to set up secure
-    connections between computers over an unsecure network, like the Internet. We can use it to run
-    commands, forward ports, and transfer files. We can also use it to create a secure "tunnel" by
-    wrapping unencrypted protocols (such as HTTP) in encryption.
-
-    Normal tunneling forwards a port on a local machine to a port on a remote machine. Reverse
-    tunneling forwards a port on a remote machine to a port on a local machine.
-
-    This is useful because it allows us to direct third-party services and devices to a remote
-    machine that is exposed to the Internet. Those requests will then be forwarded to our local
-    machine. It's faster than deploying to a staging server.
-
-    I use it mostly to check how my iPhone and iPad are displaying CSS media queries, in addition
-    to the Safari Developer tools.
-
-    How to set up a reverse tunnel
-
-    First off, you don't have to DIY. You can use Localtunnel or Forward for this. I like setting
-    up my own because it's easy, responsive, and gives me a lot of control.
-
-    How easy is it? There are four steps:
-
-     1. Start a server, configured to allow reverse ssh tunneling
-     2. Configure our local ssh settings
-     3. ?
-     4. PROFIT
-
-    Ok, the real steps:
-
-     1. Configure and start a server
-     2. Configure our local ssh settings
-     3. Configure server ssh settings and reload ssh config
-     4. Establish the reverse tunnel
-
-    I'm using OS X Terminal, OpenSSH and Amazon Web Services.
-
-    Step 1: Configure and Start a Server
-
-    We are going to launch an EC2 instance using the AWS Management Console interface. Go into the
-    EC2 Mangement Console, go under Instances, and hit the "Launch Instance" button. You should see
-    the Quick Launch Wizard:
-
-    image
-
-      + Name your instance
-      + You may need to create and download a keypair
-      + I like Ubuntu Server 12.04.2 LTS
-
-    Hit "Continue." Next, let's edit the instance details.
-
-    image
-
-    I just use a t1.micro. If you want something beefier, select it under the Instance Details
-    radio button.
-
-    Under Security Settings:
-
-    image
-
-      + Create a new Security Group
-      + Call it something like "Reverse SSH Tunnel", add a description
-      + Add a rule to allow access on port 22 (SSH) at source 0.0.0.0/0
-      + Add another rule to allow access on port 3000 (or whatever port you want to forward traffic
-        from) at source 0.0.0.0/0
-      + Create the Security Group
-      + Select that group and hit Save Details
-      + Launch the instance
-
-    Note that you can also launch an instance and edit the Security Group afterwards. The process
-    is similar.
-
-    Optional: Assign an Elastic IP
-
-    When your instance launches, you will see it is assigned a default IP address, something like
-    ec2-54-211-63-58.compute-1.amazonaws.com. To make that a little more manageable, and to persist
-    an IP across starting/stopping an instance, let's assign an Elastic IP.
-
-     1. Under Network & Security, go to Elastic IPs
-     2. Allocate a New Address, in EC2
-     3. Associate the Address with your instance
-
-    Now when you select your instance, you should see something like this, with a nice static IP:
-
-    image
-
-    Step 2: Configure Local SSH Settings
-
-    Find the *.pem key you downloaded and copy it to your ~/.ssh folder. For me this was:
-
-    $ mv ~/Downloads/reverse-ssh-key.pem ~/.ssh
-
-    AWS requires us to set the permissions on our key so that only the owner may read it.
-
-    $ chmod 600 ~/.ssh/reverse-ssh-key.pem
-
-    To avoid having to pass in a long set of parameters every time we want to open the tunnel, we
-    can edit the ~/.ssh/config file to include:
-
-    host 54.227.245.213
-        user ubuntu
-        StrictHostKeyChecking no
-        UserKnownHostsFile /dev/null
-        CheckHostIP no
-        IdentityFile ~/.ssh/reverse-ssh-key.pem
-        ServerAliveInterval 120
-
-    Hit $ man ssh_config to read about these options.
-
-      + Host is the IP address of the instance we fired up.
-      + User should be whatever your OS prefers. If you use Amazon's Linux AMI, it will want you to
-        log in as "ec2-user." Ubuntu will let you start a console as root, but will want you to be
-        a normal user for other tasks.
-      + Several options have to do with checking/managing keys. I'm ok here because we are just
-        connecting to a specified IP. If you wanted to be paranoid then...you shouldn't be following
-        this tutorial.
-      + ServerAliveInterval pings the remote host every n seconds, to keep the connection alive.
-        Not setting it will eventually result in a "Write failed: Broken pipe" error.
-
-    Save and open a new shell window to load the new config.
-
-    Step 3: Configure Server SSH Settings and Reload SSH Config
-
-    Check that you can ssh into your server now:
-
-    $ ssh 54.227.245.213
-
-    image
-
-    Awesome.
-
-    Finally, we have to configure the port binding on the instance. Get into the sshd_config file
-    with write access and add "GatewayPorts yes".
-
-    ubuntu@ip-10-147-225-211:~$ sudo vim /etc/ssh/sshd_config
-
-    image
-
-    (In vim, arrow scroll to where you want to insert, hit "i" to insert, esc to end the insert,
-    ":w" to save, ":q" to quit.)
-
-    If you need to not bind everything on the wildcard, you can set GatewayPorts to other things.
-    ($ man ssh and $ man sshd_config it.)
-
-    Finally, reload the ssh configuration and exit the session:
-
-    ubuntu@ip-10-147-225-211:~$ sudo reload ssh
-    ubuntu@ip-10-147-225-211:~$ exit
-
-    Step 4: Establish the Reverse Tunnel
-
-    Now it's time for magic. Fire up a local server. I'm using port 3000. The syntax for reverse
-    tunneling is:
-
-    $ ssh -R [bind_address:]port:host:hostport address
-
-    With GatewayPorts set to "yes" on the server, we can leave out the bind_address. So:
-
-    $ ssh -R 3000:localhost:3000 54.227.245.213
-
-    means that port 3000 on the remote server is to be forwarded to the given host and port on the
-    local side. Remember, if you want to use a different remote port, you need to allow access in
-    your EC2 Security Group settings.
-
-    You should be able to point a web browser at the specified port on your server
-    (54.227.245.213:3000 here) and interact with your development environment.
-
-    Optional: Add an Alias
-
-    The last thing I'm going to do is add an alias in my ~/.bashrc file:
-
-    alias devtunnel="ssh -NR 3000:localhost:3000 54.227.245.213"
-
-    -N runs the ssh session without executing a remote command. You can also run it with -f to send
-    it to background.
-
-    Now, after I open a new shell window, I can start a new tunnel with:
-
-    $ devtunnel
-
-    That's it. Enjoy.
-
-      +
-          o
-          o
-      + July 30, 2013 (3:20 pm)
-      + #reverse tunnel
-      + #ssh
-      + #aws
-
-© 2013–2016 Aptible Blog Archives [impixu][impixu]
-
-#+end_example
 ** DONE remote port forwarding failed for listen port
   CLOSED: [2016-05-21 Sat 07:32]
 http://bbrinck.com/post/2318562750/reverse-ssh-tunneling-easier-than-port
@@ -643,133 +438,6 @@ It is possible to obtain information about the remote SSH server by sending an e
 #+END_EXAMPLE
 ** TODO ssh security: 70657 - SSH Algorithms and Languages Supported
 https://www.tenable.com/plugins/index.php?view=single&id=70657
-#+BEGIN_EXAMPLE
-70657 - SSH Algorithms and Languages Supported	[-/+]
-Synopsis
-An SSH server is listening on this port.
-Description
-This script detects which algorithms and languages are supported by the remote service for encrypting communications.
-Solution
-n/a
-Risk Factor
-None
-Plugin Information:
-Publication date: 2013/10/28, Modification date: 2014/04/04
-Ports
-tcp/2702
-
-Nessus negotiated the following encryption algorithm with the server : aes128-cbc
-
-The server supports the following options for kex_algorithms :
-
-curve25519-sha256@libssh.org
-diffie-hellman-group-exchange-sha1
-diffie-hellman-group-exchange-sha256
-diffie-hellman-group1-sha1
-diffie-hellman-group14-sha1
-ecdh-sha2-nistp256
-ecdh-sha2-nistp384
-ecdh-sha2-nistp521
-
-The server supports the following options for server_host_key_algorithms :
-
-ecdsa-sha2-nistp256
-ssh-dss
-ssh-ed25519
-ssh-rsa
-
-The server supports the following options for encryption_algorithms_client_to_server :
-
-3des-cbc
-aes128-cbc
-aes128-ctr
-aes128-gcm@openssh.com
-aes192-cbc
-aes192-ctr
-aes256-cbc
-aes256-ctr
-aes256-gcm@openssh.com
-arcfour
-arcfour128
-arcfour256
-blowfish-cbc
-cast128-cbc
-chacha20-poly1305@openssh.com
-rijndael-cbc@lysator.liu.se
-
-The server supports the following options for encryption_algorithms_server_to_client :
-
-3des-cbc
-aes128-cbc
-aes128-ctr
-aes128-gcm@openssh.com
-aes192-cbc
-aes192-ctr
-aes256-cbc
-aes256-ctr
-aes256-gcm@openssh.com
-arcfour
-arcfour128
-arcfour256
-blowfish-cbc
-cast128-cbc
-chacha20-poly1305@openssh.com
-rijndael-cbc@lysator.liu.se
-
-The server supports the following options for mac_algorithms_client_to_server :
-
-hmac-md5
-hmac-md5-96
-hmac-md5-96-etm@openssh.com
-hmac-md5-etm@openssh.com
-hmac-ripemd160
-hmac-ripemd160-etm@openssh.com
-hmac-ripemd160@openssh.com
-hmac-sha1
-hmac-sha1-96
-hmac-sha1-96-etm@openssh.com
-hmac-sha1-etm@openssh.com
-hmac-sha2-256
-hmac-sha2-256-etm@openssh.com
-hmac-sha2-512
-hmac-sha2-512-etm@openssh.com
-umac-128-etm@openssh.com
-umac-128@openssh.com
-umac-64-etm@openssh.com
-umac-64@openssh.com
-
-The server supports the following options for mac_algorithms_server_to_client :
-
-hmac-md5
-hmac-md5-96
-hmac-md5-96-etm@openssh.com
-hmac-md5-etm@openssh.com
-hmac-ripemd160
-hmac-ripemd160-etm@openssh.com
-hmac-ripemd160@openssh.com
-hmac-sha1
-hmac-sha1-96
-hmac-sha1-96-etm@openssh.com
-hmac-sha1-etm@openssh.com
-hmac-sha2-256
-hmac-sha2-256-etm@openssh.com
-hmac-sha2-512
-hmac-sha2-512-etm@openssh.com
-umac-128-etm@openssh.com
-umac-128@openssh.com
-umac-64-etm@openssh.com
-umac-64@openssh.com
-
-The server supports the following options for compression_algorithms_client_to_server :
-
-none
-zlib@openssh.com
-
-The server supports the following options for compression_algorithms_server_to_client :
-
-none
-zlib@openssh.com
-#+END_EXAMPLE
 ** TODO ssh security: 10881 - SSH Protocol Versions Supported
 #+BEGIN_EXAMPLE
 	10881 - SSH Protocol Versions Supported	[-/+]
@@ -823,8 +491,4 @@ ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
   CLOSED: [2017-09-04 Mon 10:41]
 https://askubuntu.com/questions/586806/aws-ec2-set-up-key-and-non-key-authentication-at-same-time
 no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="echo 'Please login as the user \"ubuntu\" rather than the user \"root\".';echo;sleep 10"
-* DONE SCP from one external server to another                     :noexport:
-  CLOSED: [2018-01-23 Tue 10:04]
-https://unix.stackexchange.com/questions/184379/scp-from-one-server-to-another-server
-https://superuser.com/questions/66949/scp-from-one-external-server-to-another
-* TODO ssh-copy-id                                                 :noexport:
+* TODO ssh with rsync                                              :noexport:
