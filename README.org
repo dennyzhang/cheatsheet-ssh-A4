@@ -138,13 +138,13 @@ autossh -M 40000 -p 2702 -i /home/denny/al -fN \
 #+END_EXAMPLE
 ** More Resources
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
-
 #+BEGIN_EXAMPLE
-https://computingforgeeks.com/ssh-cheatsheet-for-sysadmins/
 https://neverendingsecurity.wordpress.com/2015/04/07/ssh-cheatsheet/
 http://patrickward.com/cheatsheets/2015/02/16/ssh-cheatsheet/
 https://bitrot.sh/cheatsheet/13-12-2017-ssh-cheatsheet/
 https://gist.github.com/CodyKochmann/166833b3b31cdb936d69
+http://pentestmonkey.net/cheat-sheet/ssh-cheat-sheet
+https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id
 #+END_EXAMPLE
 
 #+BEGIN_HTML
@@ -506,3 +506,20 @@ https://computingforgeeks.com/ssh-cheatsheet-for-sysadmins/
 * TODO ssh with rsync                                              :noexport:
 * TODO Create a SOCKS proxy tunnel                                 :noexport:
 https://computingforgeeks.com/ssh-cheatsheet-for-sysadmins/
+* sshpass with password                                            :noexport:
+pks-ci/ci/scripts/lib/pks-test-setup.sh
+#+BEGIN_SRC sh
+  # Add pub key to jumphost's authorized keys and restart sshd on jumphost
+  sshpass -p $jumphost_password ssh -o StrictHostKeyChecking=no $jumphost_username@$jumphost_ip <<-ENDSSH
+  mkdir -p /tmp/jumphost_keys
+  rm -rf $jumphost_pub_key
+ENDSSH
+  sshpass -p $jumphost_password scp -o StrictHostKeyChecking=no $jumphost_pub_key $jumphost_username@$jumphost_ip:$jumphost_pub_key
+  sshpass -p $jumphost_password ssh -o StrictHostKeyChecking=no $jumphost_username@$jumphost_ip <<-ENDSSH
+  mkdir -p ~/.ssh
+  rm -rf ~/.ssh/authorized_keys
+  cat $jumphost_pub_key >> ~/.ssh/authorized_keys
+  sudo sed -i 's/#AuthorizedKeysFile/AuthorizedKeysFile/g' /etc/ssh/sshd_config
+  sudo systemctl restart sshd || echo "Failed to restart sshd"
+ENDSSH
+#+END_SRC
