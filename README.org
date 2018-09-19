@@ -138,14 +138,18 @@ autossh -M 40000 -p 2702 -i /home/denny/al -fN \
 #+END_EXAMPLE
 ** More Resources
 License: Code is licensed under [[https://www.dennyzhang.com/wp-content/mit_license.txt][MIT License]].
-#+BEGIN_EXAMPLE
+
 https://neverendingsecurity.wordpress.com/2015/04/07/ssh-cheatsheet/
+
 http://patrickward.com/cheatsheets/2015/02/16/ssh-cheatsheet/
+
 https://bitrot.sh/cheatsheet/13-12-2017-ssh-cheatsheet/
+
 https://gist.github.com/CodyKochmann/166833b3b31cdb936d69
+
 http://pentestmonkey.net/cheat-sheet/ssh-cheat-sheet
+
 https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-password-using-ssh-keygen-ssh-copy-id
-#+END_EXAMPLE
 
 #+BEGIN_HTML
 <a href="https://www.dennyzhang.com"><img align="right" width="201" height="268" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/denny_201706.png"></a>
