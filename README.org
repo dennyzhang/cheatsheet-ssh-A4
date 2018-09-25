@@ -16,9 +16,8 @@
 <a href="http://makeapullrequest.com" target="_blank" rel="nofollow"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"/></a>
 #+END_HTML
 
-- PDF Link: [[https://github.com/dennyzhang/cheatsheet-ssh-A4/blob/master/cheatsheet-ssh-A4.pdf][cheatsheet-ssh-A4.pdf]]
+- PDF Link: [[https://github.com/dennyzhang/cheatsheet-ssh-A4/blob/master/cheatsheet-ssh-A4.pdf][cheatsheet-ssh-A4.pdf]], Category: [[https://cheatsheet.dennyzhang.com/category/tools][tools]]
 - Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-ssh-A4
-- Category: [[https://cheatsheet.dennyzhang.com/category/tools][tools]]
 
 File me [[https://github.com/DennyZhang/cheatsheet-ssh-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-ssh-A4][this repo]].
 
@@ -31,6 +30,7 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Install ssh server                      | =apt-get install openssh=                                                                |
 | Run ssh command                         | =ssh -o StrictHostKeyChecking=no -p 2702 root@172.17.0.8 date=                           |
 | SSH with verbose ouptut                 | =ssh -vvv -p 2702 root@45.33.87.74 date 2>&1=                                            |
+| ssh without input password              | =sshpass -p '<your-passwd>' ssh <username>@<ssh_host>=, =brew install sshpass=           |
 | SSH passwordless login                  | =ssh-copy-id <username>@<ssh_host>=, Or manually update =~/.ssh/authorized_keys=         |
 | Remove an entry from =known_hosts file= | =ssh-keygen -f ~/.ssh/known_hosts -R github.com=                                         |
 | Diff local file with remote one         | =diff local_file.txt <(ssh <username>@<ssh_host> 'cat remote_file.txt')=                 |
