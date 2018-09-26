@@ -172,7 +172,7 @@ https://www.thegeekstuff.com/2008/11/3-steps-to-perform-ssh-login-without-passwo
 #+LATEX_HEADER: \fancyhf{}
 #+LATEX_HEADER: \rhead{Updated: \today}
 #+LATEX_HEADER: \rfoot{\thepage\ of \pageref{LastPage}}
-#+LATEX_HEADER: \lfoot{\href{https://github.com/dennyzhang/.*cheatsheet-ssh-A4}{GitHub: https://github.com/dennyzhang/.*cheatsheet-ssh-A4}}
+#+LATEX_HEADER: \lfoot{\href{https://github.com/dennyzhang/cheatsheet-ssh-A4}{GitHub: https://github.com/dennyzhang/cheatsheet-ssh-A4}}
 #+LATEX_HEADER: \lhead{\href{https://cheatsheet.dennyzhang.com/cheatsheet-slack-A4}{Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-ssh-A4}}
 #+AUTHOR: Denny Zhang
 #+EMAIL:  denny@dennyzhang.com
@@ -527,3 +527,74 @@ ENDSSH
   sudo systemctl restart sshd || echo "Failed to restart sshd"
 ENDSSH
 #+END_SRC
+* more content                                                     :noexport:
+** ssh-copy-id
+# To copy a key to a remote host:
+ssh-copy-id username@host
+
+# To copy a key to a remote host on a non-standard port:
+ssh-copy-id username@host -p 2222
+
+# To copy a key to a remote host on a non-standard port with non-standard ssh key:
+ssh-copy-id ~/.ssh/otherkey "username@host -p 2222"
+** ssh-keygen
+# To generate an SSH key:
+ssh-keygen -t rsa
+
+# To generate a 4096-bit SSH key:
+ssh-keygen -t rsa -b 4096
+
+# To update a passphrase on a key
+ssh-keygen -p -P old_passphrase -N new_passphrase -f /path/to/keyfile
+
+# To remove a passphrase on a key
+ssh-keygen -p -P old_passphrase -N '' -f /path/to/keyfile
+
+# To generate a 4096 bit RSA key with a passphase and comment containing the user and hostname
+ssh-keygen -t rsa -b 4096 -C "$USER@$HOSTNAME" -P passphrase
+
+** ssh
+# To ssh via pem file (which normally needs 0600 permissions):
+ssh -i /path/to/file.pem user@example.com
+
+# To connect on an non-standard port:
+ssh -p 2222 user@example.com
+
+# To connect and forward the authentication agent
+ssh -A user@example.com
+
+# To execute a command on a remote server:
+ssh -t user@example.com 'the-remote-command'
+
+# To tunnel an x session over SSH:
+ssh -X user@example.com
+
+# Redirect traffic with a tunnel between local host (port 8080) and a remote
+# host (remote.example.com:5000) through a proxy (personal.server.com):
+ssh -f -L 8080:remote.example.com:5000 user@personal.server.com -N
+
+# To launch a specific x application over SSH:
+ssh -X -t user@example.com 'chromium-browser'
+
+# To create a SOCKS proxy on localhost and port 9999
+ssh -D 9999 user@example.com
+
+# -X use an xsession, -C compress data, "-c blowfish" use the encryption blowfish
+ssh user@example.com -C -c blowfish -X
+
+# For more information, see:
+# http://unix.stackexchange.com/q/12755/44856
+
+# Copy files and folders through ssh from remote host to pwd with tar.gz compression
+# when there is no rsync command available
+ssh user@example.com "cd /var/www/Shared/; tar zcf - asset1 asset2" | tar zxf -
+
+# Mount folder/filesystem through SSH
+# Install SSHFS from https://github.com/libfuse/sshfs
+# Will allow you to mount a folder securely over a network.
+sshfs name@server:/path/to/folder /path/to/mount/point
+
+# Emacs can read file through SSH
+# Doc: http://www.gnu.org/software/emacs/manual/html_node/emacs/Remote-Files.html
+emacs /ssh:name@server:/path/to/file
+
