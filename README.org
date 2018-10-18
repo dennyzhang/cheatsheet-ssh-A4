@@ -39,6 +39,13 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | SSH agent load key                      | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                           |
 | Emacs read remote file with tramp       | =emacs /ssh:<username>@<ssh_host>:/path/to/file=                                         |
 
+** SSH tools
+| Name                         | Summary                                                                           |   |
+|------------------------------+-----------------------------------------------------------------------------------+---|
+| Export local env to Internet | [[https://ngrok.com/][ngrok.com]]                                                                         |   |
+| Reverse ssh proxy            | [[https://github.com/sshuttle/sshuttle][sshuttle]]                                                                          |   |
+| SSH by auto input password   | [[https://www.cyberciti.biz/faq/noninteractive-shell-script-ssh-password-provider/][sshpass]] sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $username@$ssh_ip= |   |
+
 ** SCP
 | Name                                    | Summary                                                      |
 |-----------------------------------------+--------------------------------------------------------------|
@@ -61,7 +68,6 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 |---------------------------------------+-----------------------------------------------------------------------------------------|
 | SSH port forward to a local port      | =ssh -N -i <ssh-keyfile> -f root@54.179.178.214 -L *:18085:localhost:8085 -n /bin/bash= |
 | Reverse port forward to remote server | =ssh -R *:40099:localhost:22 root@54.179.178.214=, =ssh -p 40099 root@54.179.178.214=   |
-| Export local env to Internet          | [[https://ngrok.com/][ngrok.com]]                                                                               |
 
 ** SSH files
 | Name                                     | Summary                                                              |
