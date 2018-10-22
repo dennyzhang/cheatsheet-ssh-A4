@@ -18,12 +18,12 @@
 
 - PDF Link: [[https://github.com/dennyzhang/cheatsheet-ssh-A4/blob/master/cheatsheet-ssh-A4.pdf][cheatsheet-ssh-A4.pdf]], Category: [[https://cheatsheet.dennyzhang.com/category/tools][tools]]
 - Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-ssh-A4
+- Related posts: [[https://cheatsheet.dennyzhang.com/cheatsheet-tmux-A4][Tmux/Tmate Cheatsheet]]
 
 File me [[https://github.com/DennyZhang/cheatsheet-ssh-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-ssh-A4][this repo]].
 
 See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
-- Related post: [[https://cheatsheet.dennyzhang.com/cheatsheet-tmux-A4][Tmux/Tmate Cheatsheet]] 
 ** SSH general
 | Name                                    | Summary                                                                                  |
 |-----------------------------------------+------------------------------------------------------------------------------------------|
@@ -70,17 +70,17 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Reverse port forward to remote server | =ssh -R *:40099:localhost:22 root@54.179.178.214=, =ssh -p 40099 root@54.179.178.214=   |
 
 ** SSH files
-| Name                                     | Summary                                                              |
-|------------------------------------------+----------------------------------------------------------------------|
-| Generate a new key pair                  | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=        |
-| Generate key pair without interaction    | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                          |
-| Add passphrase protection to ssh keyfile | =ssh-keygen -p -f id_rsa=  [[https://www.dennyzhang.com/ssh_passphrase][link: Manage SSH Key File With Passphrase]] |
-| Convert OpenSSL format to SSH-RSA format | =ssh-keygen -f my_ssh.pub -i=                                        |
-| Critical ssh files/folders               | =~/.ssh/authorized_keys=, =~/.ssh/config=, =~/.ssh/known_hosts=      |
-| SSH config file                          | =/etc/ssh/ssh_config=, =/etc/ssh/sshd_config=                        |
-| SSH key file permission                  | =chmod 600 ~/.ssh/id_rsa=                                            |
-| SSH folder permission                    | =chmod 700 ~/.ssh=, =chown -R $USER:$USER ~/.ssh=                    |
-| Authorized_keys file permission          | =chmod 644 ~/.ssh/authorized_keys=                                   |
+| Name                                     | Summary                                                             |
+|------------------------------------------+---------------------------------------------------------------------|
+| Generate a new key pair                  | =ssh-keygen=, =ssh-keygen -C "your_email@example.com" -t rsa=       |
+| Generate key pair without interaction    | =ssh-keygen -t rsa -f /tmp/sshkey -N "" -q=                         |
+| Add passphrase protection to ssh keyfile | =ssh-keygen -p -f id_rsa= [[https://www.dennyzhang.com/ssh_passphrase][Link: Manage SSH Key File With Passphrase]] |
+| Convert OpenSSL format to SSH-RSA format | =ssh-keygen -f my_ssh.pub -i=                                       |
+| Critical ssh files/folders               | =~/.ssh/authorized_keys=, =~/.ssh/config=, =~/.ssh/known_hosts=     |
+| SSH config file                          | =/etc/ssh/ssh_config=, =/etc/ssh/sshd_config=                       |
+| SSH key file permission                  | =chmod 600 ~/.ssh/id_rsa=                                           |
+| SSH folder permission                    | =chmod 700 ~/.ssh=, =chown -R $USER:$USER ~/.ssh=                   |
+| Authorized_keys file permission          | =chmod 644 ~/.ssh/authorized_keys=                                  |
 
 ** Parse ssh log file
 | Name                              | Command                                                                        |
