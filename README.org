@@ -18,33 +18,32 @@
 
 - PDF Link: [[https://github.com/dennyzhang/cheatsheet-ssh-A4/blob/master/cheatsheet-ssh-A4.pdf][cheatsheet-ssh-A4.pdf]], Category: [[https://cheatsheet.dennyzhang.com/category/tools][tools]]
 - Blog URL: https://cheatsheet.dennyzhang.com/cheatsheet-ssh-A4
-- Related posts: [[https://cheatsheet.dennyzhang.com/cheatsheet-tmux-A4][Tmux/Tmate Cheatsheet]]
+- Related posts: [[https://cheatsheet.dennyzhang.com/cheatsheet-tmux-A4][Tmux/Tmate Cheatsheet]], [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
 
 File me [[https://github.com/DennyZhang/cheatsheet-ssh-A4/issues][Issues]] or star [[https://github.com/DennyZhang/cheatsheet-ssh-A4][this repo]].
-
-See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][#denny-cheatsheets]]
-
 ** SSH general
-| Name                                    | Summary                                                                                  |
-|-----------------------------------------+------------------------------------------------------------------------------------------|
-| Install ssh server                      | =apt-get install openssh=                                                                |
-| Run ssh command                         | =ssh -o StrictHostKeyChecking=no -p 2702 root@172.17.0.8 date=                           |
-| SSH with verbose ouptut                 | =ssh -vvv -p 2702 root@45.33.87.74 date 2>&1=                                            |
-| ssh without input password              | =sshpass -p '<your-passwd>' ssh <username>@<ssh_host>=, =brew install sshpass=           |
-| SSH passwordless login                  | =ssh-copy-id <username>@<ssh_host>=, Or manually update =~/.ssh/authorized_keys=         |
-| Remove an entry from =known_hosts file= | =ssh-keygen -f ~/.ssh/known_hosts -R github.com=                                         |
-| Diff local file with remote one         | =diff local_file.txt <(ssh <username>@<ssh_host> 'cat remote_file.txt')=                 |
-| Diff two remote ssh files               | =diff <(ssh user@remote_host 'cat file1.txt') <(ssh user2@remote_host2 'cat file2.txt')= |
-| Upload with timestamps/permissions kept | =scp -rp /tmp/abc/ ec2-user@<ssh-host>:/root/=                                           |
-| SSH agent load key                      | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                           |
-| Emacs read remote file with tramp       | =emacs /ssh:<username>@<ssh_host>:/path/to/file=                                         |
+| Name                                    | Summary                                                                                     |
+|-----------------------------------------+---------------------------------------------------------------------------------------------|
+| Install ssh server                      | =apt-get install openssh=                                                                   |
+| Run ssh command                         | =ssh -o StrictHostKeyChecking=no -p 2702 root@172.17.0.8 date=                              |
+| SSH with verbose ouptut                 | =ssh -vvv -p 2702 root@45.33.87.74 date 2>&1=                                               |
+| ssh without input password              | =sshpass -p '<your-passwd>' ssh <username>@<ssh_host>=, =brew install sshpass=              |
+| Setup ssh tunnel for your web browsing  | =sshuttle -r kubo@10.92.21.17 30.0.0.0/16 192.168.111.0/24 192.168.150.0/24 192.167.0.0/24= |
+| SSH passwordless login                  | =ssh-copy-id <username>@<ssh_host>=, Or manually update =~/.ssh/authorized_keys=            |
+| Remove an entry from =known_hosts file= | =ssh-keygen -f ~/.ssh/known_hosts -R github.com=                                            |
+| Diff local file with remote one         | =diff local_file.txt <(ssh <username>@<ssh_host> 'cat remote_file.txt')=                    |
+| Diff two remote ssh files               | =diff <(ssh user@remote_host 'cat file1.txt') <(ssh user2@remote_host2 'cat file2.txt')=    |
+| Upload with timestamps/permissions kept | =scp -rp /tmp/abc/ ec2-user@<ssh-host>:/root/=                                              |
+| SSH agent load key                      | =ssh-agent bash && ssh-add /tmp/id_rsa=                                                     |
+| SSH agent create and load key           | =exec ssh-agent bash && ssh-keygen=, =ssh-add=                                              |
+| Emacs read remote file with tramp       | =emacs /ssh:<username>@<ssh_host>:/path/to/file=                                            |
 
-** SSH tools
-| Name                         | Summary                                                                           |   |
-|------------------------------+-----------------------------------------------------------------------------------+---|
-| Export local env to Internet | [[https://ngrok.com/][ngrok.com]]                                                                         |   |
-| Reverse ssh proxy            | [[https://github.com/sshuttle/sshuttle][sshuttle]]                                                                          |   |
-| SSH by auto input password   | [[https://www.cyberciti.biz/faq/noninteractive-shell-script-ssh-password-provider/][sshpass]] sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $username@$ssh_ip= |   |
+** SSH tunnel & ssh proxy
+| Name                                   | Summary                                                                                     |
+|----------------------------------------+---------------------------------------------------------------------------------------------|
+| SSH port forward to a local port       | =ssh -N -i <ssh-keyfile> -f root@54.179.178.214 -L *:18085:localhost:8085 -n /bin/bash=     |
+| Reverse port forward to remote server  | =ssh -R *:40099:localhost:22 root@54.179.178.214=, =ssh -p 40099 root@54.179.178.214=       |
+| Setup ssh tunnel for your web browsing | =sshuttle -r kubo@10.92.21.17 30.0.0.0/16 192.168.111.0/24 192.168.150.0/24 192.167.0.0/24= |
 
 ** SCP
 | Name                                    | Summary                                                      |
@@ -62,13 +61,6 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Disable root login                          | =sed -i 's/^PermitRootLogin yes/#PermitRootLogin yes/' /etc/ssh/sshd_config=             |
 | Enable/Disable SSH Host Key Checking        | =StrictHostKeyChecking yes= change =~/.ssh/config=                                       |
 | Protect SSH server from brute force attacks | [[https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04][fail2ban command line tool]]                                                               |
-
-** SSH tunnel
-| Name                                  | Summary                                                                                 |
-|---------------------------------------+-----------------------------------------------------------------------------------------|
-| SSH port forward to a local port      | =ssh -N -i <ssh-keyfile> -f root@54.179.178.214 -L *:18085:localhost:8085 -n /bin/bash= |
-| Reverse port forward to remote server | =ssh -R *:40099:localhost:22 root@54.179.178.214=, =ssh -p 40099 root@54.179.178.214=   |
-
 ** SSH files
 | Name                                     | Summary                                                             |
 |------------------------------------------+---------------------------------------------------------------------|
@@ -93,6 +85,13 @@ See more CheatSheets from Denny: [[https://github.com/topics/denny-cheatsheets][
 | Events of ssh login by public key | =grep -R "sshd.*Accepted publickey for" /var/log/auth.log=                     |
 | Events of ssh login by password   | =grep -R "sshd.*Accepted password for" /var/log/auth.log=                      |
 | Events of ssh logout event        | =grep -R "sshd.*pam_unix(sshd:session): session closed for" /var/log/auth.log= |
+
+** SSH tools
+| Name                         | Summary                                                                           |   |
+|------------------------------+-----------------------------------------------------------------------------------+---|
+| Export local env to Internet | [[https://ngrok.com/][ngrok.com]]                                                                         |   |
+| Reverse ssh proxy            | [[https://github.com/sshuttle/sshuttle][sshuttle]]                                                                          |   |
+| SSH by auto input password   | [[https://www.cyberciti.biz/faq/noninteractive-shell-script-ssh-password-provider/][sshpass]] sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $username@$ssh_ip= |   |
 
 ** Scripts
 - Inject local key to remote ssh server server
@@ -603,3 +602,5 @@ sshfs name@server:/path/to/folder /path/to/mount/point
 # Emacs can read file through SSH
 # Doc: http://www.gnu.org/software/emacs/manual/html_node/emacs/Remote-Files.html
 emacs /ssh:name@server:/path/to/file
+* TODO sshuttle                                                    :noexport:
+sshuttle -r kubo@10.92.28.172 30.0.0.0/16 192.168.111.0/24 192.168.150.0/24 192.167.0.0/24 -e 'ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no' -D --no-latency-control
