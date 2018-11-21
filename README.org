@@ -61,6 +61,9 @@ File me [[https://github.com/DennyZhang/cheatsheet-ssh-A4/issues][Issues]] or st
 | Disable root login                          | =sed -i 's/^PermitRootLogin yes/#PermitRootLogin yes/' /etc/ssh/sshd_config=             |
 | Enable/Disable SSH Host Key Checking        | =StrictHostKeyChecking yes= change =~/.ssh/config=                                       |
 | Protect SSH server from brute force attacks | [[https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-ubuntu-14-04][fail2ban command line tool]]                                                               |
+#+BEGIN_HTML
+<a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
+#+END_HTML
 ** SSH files
 | Name                                     | Summary                                                             |
 |------------------------------------------+---------------------------------------------------------------------|
@@ -73,6 +76,9 @@ File me [[https://github.com/DennyZhang/cheatsheet-ssh-A4/issues][Issues]] or st
 | SSH key file permission                  | =chmod 600 ~/.ssh/id_rsa=                                           |
 | SSH folder permission                    | =chmod 700 ~/.ssh=, =chown -R $USER:$USER ~/.ssh=                   |
 | Authorized_keys file permission          | =chmod 644 ~/.ssh/authorized_keys=                                  |
+#+BEGIN_HTML
+<a href="https://www.dennyzhang.com"><img align="right" width="185" height="37" src="https://raw.githubusercontent.com/USDevOps/mywechat-slack-group/master/images/dns_small.png"></a>
+#+END_HTML
 
 ** Parse ssh log file
 | Name                              | Command                                                                        |
