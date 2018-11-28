@@ -1,4 +1,4 @@
-* SSH CheatSheet                                               :Linux:
+* SSH CheatSheet                                               :Tools:
 :PROPERTIES:
 :type:     ssh
 :export_file_name: cheatsheet-ssh-A4.pdf
